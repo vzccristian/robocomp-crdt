@@ -1,0 +1,12 @@
+import "DSRD4.idsl";
+Component crdt4
+{
+	Communications
+	{
+		subscribesTo DSRD4;
+		publishes DSRD4;
+		requires DSRD4sync;
+		implements DSRD4sync;
+	};
+	language Cpp;
+};

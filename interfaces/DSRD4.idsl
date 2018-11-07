@@ -1,0 +1,59 @@
+module RoboCompDSRD4
+{
+    struct Pair {
+        string key;
+        string value;
+    };
+    sequence<Pair> Attribs;
+
+	
+	
+    struct NeighborsAttribs {
+        string uid;
+        Attribs neighbors_attribs;
+    
+    };
+    sequence<NeighborsAttribs> Neighbors;
+    
+	struct RoboCompValue {
+		int value; 
+	};
+    
+    struct CRDTData {
+        string uid;
+        int cc;
+        int dc;
+        
+    };
+    
+	struct DS {
+        string id;
+        RoboCompValue rcvalue;
+        Neighbors neighbors;
+		CRDTData crdt_data;
+		
+	};
+
+    sequence<DS> Delta;
+    
+	interface DSRD4 {
+		void sendData(Delta d);
+		void sendPortDSRD4(string port);
+	};
+	
+	
+	interface DSRD4sync {
+		bool sendSync(string name, Delta d);
+	};
+	
+    /** \interface DSRD4checker
+    * @brief interface DSRD4checker 
+    */  
+	
+	interface DSRD4checker {
+		void finish(string name);
+	};
+	
+	
+
+};

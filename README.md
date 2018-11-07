@@ -1,2 +1,2 @@
 # robocomp-crdt
-Robocomp - Replicated data types
+Robocomp - Conflict-free replicated data type

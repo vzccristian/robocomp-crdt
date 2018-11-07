@@ -1,0 +1,332 @@
+Determining if the Q_WS_WIN exist failed with the following output:
+Change Dir: /home/crivac/robocomp/components/robocomp-robolab/components/crdt4/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_269e1/fast"
+/usr/bin/make -f CMakeFiles/cmTC_269e1.dir/build.make CMakeFiles/cmTC_269e1.dir/build
+make[1]: Entering directory '/home/crivac/robocomp/components/robocomp-robolab/components/crdt4/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_269e1.dir/CheckSymbolExists.cxx.o
+/usr/bin/c++   -I/usr/include/qt4   -o CMakeFiles/cmTC_269e1.dir/CheckSymbolExists.cxx.o -c /home/crivac/robocomp/components/robocomp-robolab/components/crdt4/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx
+/home/crivac/robocomp/components/robocomp-robolab/components/crdt4/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx: In function ‘int main(int, char**)’:
+/home/crivac/robocomp/components/robocomp-robolab/components/crdt4/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx:8:19: error: ‘Q_WS_WIN’ was not declared in this scope
+   return ((int*)(&Q_WS_WIN))[argc];
+                   ^~~~~~~~
+/home/crivac/robocomp/components/robocomp-robolab/components/crdt4/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx:8:19: note: suggested alternative: ‘Q_WS_X11’
+   return ((int*)(&Q_WS_WIN))[argc];
+                   ^~~~~~~~
+                   Q_WS_X11
+CMakeFiles/cmTC_269e1.dir/build.make:65: recipe for target 'CMakeFiles/cmTC_269e1.dir/CheckSymbolExists.cxx.o' failed
+make[1]: *** [CMakeFiles/cmTC_269e1.dir/CheckSymbolExists.cxx.o] Error 1
+make[1]: Leaving directory '/home/crivac/robocomp/components/robocomp-robolab/components/crdt4/CMakeFiles/CMakeTmp'
+Makefile:126: recipe for target 'cmTC_269e1/fast' failed
+make: *** [cmTC_269e1/fast] Error 2
+
+File /home/crivac/robocomp/components/robocomp-robolab/components/crdt4/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx:
+/* */
+#include <QtCore/qglobal.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef Q_WS_WIN
+  return ((int*)(&Q_WS_WIN))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+
+Determining if the Q_WS_QWS exist failed with the following output:
+Change Dir: /home/crivac/robocomp/components/robocomp-robolab/components/crdt4/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_2ddb6/fast"
+/usr/bin/make -f CMakeFiles/cmTC_2ddb6.dir/build.make CMakeFiles/cmTC_2ddb6.dir/build
+make[1]: Entering directory '/home/crivac/robocomp/components/robocomp-robolab/components/crdt4/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_2ddb6.dir/CheckSymbolExists.cxx.o
+/usr/bin/c++   -I/usr/include/qt4   -o CMakeFiles/cmTC_2ddb6.dir/CheckSymbolExists.cxx.o -c /home/crivac/robocomp/components/robocomp-robolab/components/crdt4/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx
+/home/crivac/robocomp/components/robocomp-robolab/components/crdt4/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx: In function ‘int main(int, char**)’:
+/home/crivac/robocomp/components/robocomp-robolab/components/crdt4/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx:8:19: error: ‘Q_WS_QWS’ was not declared in this scope
+   return ((int*)(&Q_WS_QWS))[argc];
+                   ^~~~~~~~
+/home/crivac/robocomp/components/robocomp-robolab/components/crdt4/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx:8:19: note: suggested alternative: ‘Q_WS_X11’
+   return ((int*)(&Q_WS_QWS))[argc];
+                   ^~~~~~~~
+                   Q_WS_X11
+CMakeFiles/cmTC_2ddb6.dir/build.make:65: recipe for target 'CMakeFiles/cmTC_2ddb6.dir/CheckSymbolExists.cxx.o' failed
+make[1]: *** [CMakeFiles/cmTC_2ddb6.dir/CheckSymbolExists.cxx.o] Error 1
+make[1]: Leaving directory '/home/crivac/robocomp/components/robocomp-robolab/components/crdt4/CMakeFiles/CMakeTmp'
+Makefile:126: recipe for target 'cmTC_2ddb6/fast' failed
+make: *** [cmTC_2ddb6/fast] Error 2
+
+File /home/crivac/robocomp/components/robocomp-robolab/components/crdt4/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx:
+/* */
+#include <QtCore/qglobal.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef Q_WS_QWS
+  return ((int*)(&Q_WS_QWS))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+
+Determining if the Q_WS_MAC exist failed with the following output:
+Change Dir: /home/crivac/robocomp/components/robocomp-robolab/components/crdt4/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_9ad1b/fast"
+/usr/bin/make -f CMakeFiles/cmTC_9ad1b.dir/build.make CMakeFiles/cmTC_9ad1b.dir/build
+make[1]: Entering directory '/home/crivac/robocomp/components/robocomp-robolab/components/crdt4/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_9ad1b.dir/CheckSymbolExists.cxx.o
+/usr/bin/c++   -I/usr/include/qt4   -o CMakeFiles/cmTC_9ad1b.dir/CheckSymbolExists.cxx.o -c /home/crivac/robocomp/components/robocomp-robolab/components/crdt4/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx
+/home/crivac/robocomp/components/robocomp-robolab/components/crdt4/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx: In function ‘int main(int, char**)’:
+/home/crivac/robocomp/components/robocomp-robolab/components/crdt4/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx:8:19: error: ‘Q_WS_MAC’ was not declared in this scope
+   return ((int*)(&Q_WS_MAC))[argc];
+                   ^~~~~~~~
+/home/crivac/robocomp/components/robocomp-robolab/components/crdt4/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx:8:19: note: suggested alternative: ‘Q_WS_X11’
+   return ((int*)(&Q_WS_MAC))[argc];
+                   ^~~~~~~~
+                   Q_WS_X11
+CMakeFiles/cmTC_9ad1b.dir/build.make:65: recipe for target 'CMakeFiles/cmTC_9ad1b.dir/CheckSymbolExists.cxx.o' failed
+make[1]: *** [CMakeFiles/cmTC_9ad1b.dir/CheckSymbolExists.cxx.o] Error 1
+make[1]: Leaving directory '/home/crivac/robocomp/components/robocomp-robolab/components/crdt4/CMakeFiles/CMakeTmp'
+Makefile:126: recipe for target 'cmTC_9ad1b/fast' failed
+make: *** [cmTC_9ad1b/fast] Error 2
+
+File /home/crivac/robocomp/components/robocomp-robolab/components/crdt4/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx:
+/* */
+#include <QtCore/qglobal.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef Q_WS_MAC
+  return ((int*)(&Q_WS_MAC))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+
+Determining if the pthread_create exist failed with the following output:
+Change Dir: /home/crivac/robocomp/components/robocomp-robolab/components/crdt4/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_c10aa/fast"
+/usr/bin/make -f CMakeFiles/cmTC_c10aa.dir/build.make CMakeFiles/cmTC_c10aa.dir/build
+make[1]: Entering directory '/home/crivac/robocomp/components/robocomp-robolab/components/crdt4/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_c10aa.dir/CheckSymbolExists.c.o
+/usr/bin/cc    -o CMakeFiles/cmTC_c10aa.dir/CheckSymbolExists.c.o   -c /home/crivac/robocomp/components/robocomp-robolab/components/crdt4/CMakeFiles/CMakeTmp/CheckSymbolExists.c
+Linking C executable cmTC_c10aa
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_c10aa.dir/link.txt --verbose=1
+/usr/bin/cc      -rdynamic CMakeFiles/cmTC_c10aa.dir/CheckSymbolExists.c.o  -o cmTC_c10aa 
+CMakeFiles/cmTC_c10aa.dir/CheckSymbolExists.c.o: In function `main':
+CheckSymbolExists.c:(.text+0x1b): undefined reference to `pthread_create'
+collect2: error: ld returned 1 exit status
+CMakeFiles/cmTC_c10aa.dir/build.make:97: recipe for target 'cmTC_c10aa' failed
+make[1]: *** [cmTC_c10aa] Error 1
+make[1]: Leaving directory '/home/crivac/robocomp/components/robocomp-robolab/components/crdt4/CMakeFiles/CMakeTmp'
+Makefile:126: recipe for target 'cmTC_c10aa/fast' failed
+make: *** [cmTC_c10aa/fast] Error 2
+
+File /home/crivac/robocomp/components/robocomp-robolab/components/crdt4/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include <pthread.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef pthread_create
+  return ((int*)(&pthread_create))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+
+Determining if the function pthread_create exists in the pthreads failed with the following output:
+Change Dir: /home/crivac/robocomp/components/robocomp-robolab/components/crdt4/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_595dd/fast"
+/usr/bin/make -f CMakeFiles/cmTC_595dd.dir/build.make CMakeFiles/cmTC_595dd.dir/build
+make[1]: Entering directory '/home/crivac/robocomp/components/robocomp-robolab/components/crdt4/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_595dd.dir/CheckFunctionExists.c.o
+/usr/bin/cc   -DCHECK_FUNCTION_EXISTS=pthread_create   -o CMakeFiles/cmTC_595dd.dir/CheckFunctionExists.c.o   -c /usr/share/cmake-3.10/Modules/CheckFunctionExists.c
+Linking C executable cmTC_595dd
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_595dd.dir/link.txt --verbose=1
+/usr/bin/cc  -DCHECK_FUNCTION_EXISTS=pthread_create    -rdynamic CMakeFiles/cmTC_595dd.dir/CheckFunctionExists.c.o  -o cmTC_595dd -lpthreads 
+/usr/bin/ld: cannot find -lpthreads
+collect2: error: ld returned 1 exit status
+CMakeFiles/cmTC_595dd.dir/build.make:97: recipe for target 'cmTC_595dd' failed
+make[1]: *** [cmTC_595dd] Error 1
+make[1]: Leaving directory '/home/crivac/robocomp/components/robocomp-robolab/components/crdt4/CMakeFiles/CMakeTmp'
+Makefile:126: recipe for target 'cmTC_595dd/fast' failed
+make: *** [cmTC_595dd/fast] Error 2
+
+
+Determining if the Q_WS_WIN exist failed with the following output:
+Change Dir: /home/crivac/robocomp/components/robocomp-crdt/crdt4/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_d91dc/fast"
+/usr/bin/make -f CMakeFiles/cmTC_d91dc.dir/build.make CMakeFiles/cmTC_d91dc.dir/build
+make[1]: Entering directory '/home/crivac/robocomp/components/robocomp-crdt/crdt4/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_d91dc.dir/CheckSymbolExists.cxx.o
+/usr/bin/c++   -I/usr/include/qt4   -o CMakeFiles/cmTC_d91dc.dir/CheckSymbolExists.cxx.o -c /home/crivac/robocomp/components/robocomp-crdt/crdt4/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx
+/home/crivac/robocomp/components/robocomp-crdt/crdt4/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx: In function ‘int main(int, char**)’:
+/home/crivac/robocomp/components/robocomp-crdt/crdt4/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx:8:19: error: ‘Q_WS_WIN’ was not declared in this scope
+   return ((int*)(&Q_WS_WIN))[argc];
+                   ^~~~~~~~
+/home/crivac/robocomp/components/robocomp-crdt/crdt4/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx:8:19: note: suggested alternative: ‘Q_WS_X11’
+   return ((int*)(&Q_WS_WIN))[argc];
+                   ^~~~~~~~
+                   Q_WS_X11
+CMakeFiles/cmTC_d91dc.dir/build.make:65: recipe for target 'CMakeFiles/cmTC_d91dc.dir/CheckSymbolExists.cxx.o' failed
+make[1]: *** [CMakeFiles/cmTC_d91dc.dir/CheckSymbolExists.cxx.o] Error 1
+make[1]: Leaving directory '/home/crivac/robocomp/components/robocomp-crdt/crdt4/CMakeFiles/CMakeTmp'
+Makefile:126: recipe for target 'cmTC_d91dc/fast' failed
+make: *** [cmTC_d91dc/fast] Error 2
+
+File /home/crivac/robocomp/components/robocomp-crdt/crdt4/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx:
+/* */
+#include <QtCore/qglobal.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef Q_WS_WIN
+  return ((int*)(&Q_WS_WIN))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+
+Determining if the Q_WS_QWS exist failed with the following output:
+Change Dir: /home/crivac/robocomp/components/robocomp-crdt/crdt4/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_41ff2/fast"
+/usr/bin/make -f CMakeFiles/cmTC_41ff2.dir/build.make CMakeFiles/cmTC_41ff2.dir/build
+make[1]: Entering directory '/home/crivac/robocomp/components/robocomp-crdt/crdt4/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_41ff2.dir/CheckSymbolExists.cxx.o
+/usr/bin/c++   -I/usr/include/qt4   -o CMakeFiles/cmTC_41ff2.dir/CheckSymbolExists.cxx.o -c /home/crivac/robocomp/components/robocomp-crdt/crdt4/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx
+/home/crivac/robocomp/components/robocomp-crdt/crdt4/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx: In function ‘int main(int, char**)’:
+/home/crivac/robocomp/components/robocomp-crdt/crdt4/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx:8:19: error: ‘Q_WS_QWS’ was not declared in this scope
+   return ((int*)(&Q_WS_QWS))[argc];
+                   ^~~~~~~~
+/home/crivac/robocomp/components/robocomp-crdt/crdt4/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx:8:19: note: suggested alternative: ‘Q_WS_X11’
+   return ((int*)(&Q_WS_QWS))[argc];
+                   ^~~~~~~~
+                   Q_WS_X11
+CMakeFiles/cmTC_41ff2.dir/build.make:65: recipe for target 'CMakeFiles/cmTC_41ff2.dir/CheckSymbolExists.cxx.o' failed
+make[1]: *** [CMakeFiles/cmTC_41ff2.dir/CheckSymbolExists.cxx.o] Error 1
+make[1]: Leaving directory '/home/crivac/robocomp/components/robocomp-crdt/crdt4/CMakeFiles/CMakeTmp'
+Makefile:126: recipe for target 'cmTC_41ff2/fast' failed
+make: *** [cmTC_41ff2/fast] Error 2
+
+File /home/crivac/robocomp/components/robocomp-crdt/crdt4/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx:
+/* */
+#include <QtCore/qglobal.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef Q_WS_QWS
+  return ((int*)(&Q_WS_QWS))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+
+Determining if the Q_WS_MAC exist failed with the following output:
+Change Dir: /home/crivac/robocomp/components/robocomp-crdt/crdt4/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_21512/fast"
+/usr/bin/make -f CMakeFiles/cmTC_21512.dir/build.make CMakeFiles/cmTC_21512.dir/build
+make[1]: Entering directory '/home/crivac/robocomp/components/robocomp-crdt/crdt4/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_21512.dir/CheckSymbolExists.cxx.o
+/usr/bin/c++   -I/usr/include/qt4   -o CMakeFiles/cmTC_21512.dir/CheckSymbolExists.cxx.o -c /home/crivac/robocomp/components/robocomp-crdt/crdt4/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx
+/home/crivac/robocomp/components/robocomp-crdt/crdt4/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx: In function ‘int main(int, char**)’:
+/home/crivac/robocomp/components/robocomp-crdt/crdt4/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx:8:19: error: ‘Q_WS_MAC’ was not declared in this scope
+   return ((int*)(&Q_WS_MAC))[argc];
+                   ^~~~~~~~
+/home/crivac/robocomp/components/robocomp-crdt/crdt4/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx:8:19: note: suggested alternative: ‘Q_WS_X11’
+   return ((int*)(&Q_WS_MAC))[argc];
+                   ^~~~~~~~
+                   Q_WS_X11
+CMakeFiles/cmTC_21512.dir/build.make:65: recipe for target 'CMakeFiles/cmTC_21512.dir/CheckSymbolExists.cxx.o' failed
+make[1]: *** [CMakeFiles/cmTC_21512.dir/CheckSymbolExists.cxx.o] Error 1
+make[1]: Leaving directory '/home/crivac/robocomp/components/robocomp-crdt/crdt4/CMakeFiles/CMakeTmp'
+Makefile:126: recipe for target 'cmTC_21512/fast' failed
+make: *** [cmTC_21512/fast] Error 2
+
+File /home/crivac/robocomp/components/robocomp-crdt/crdt4/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx:
+/* */
+#include <QtCore/qglobal.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef Q_WS_MAC
+  return ((int*)(&Q_WS_MAC))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+
+Determining if the pthread_create exist failed with the following output:
+Change Dir: /home/crivac/robocomp/components/robocomp-crdt/crdt4/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_71846/fast"
+/usr/bin/make -f CMakeFiles/cmTC_71846.dir/build.make CMakeFiles/cmTC_71846.dir/build
+make[1]: Entering directory '/home/crivac/robocomp/components/robocomp-crdt/crdt4/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_71846.dir/CheckSymbolExists.c.o
+/usr/bin/cc    -o CMakeFiles/cmTC_71846.dir/CheckSymbolExists.c.o   -c /home/crivac/robocomp/components/robocomp-crdt/crdt4/CMakeFiles/CMakeTmp/CheckSymbolExists.c
+Linking C executable cmTC_71846
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_71846.dir/link.txt --verbose=1
+/usr/bin/cc      -rdynamic CMakeFiles/cmTC_71846.dir/CheckSymbolExists.c.o  -o cmTC_71846 
+CMakeFiles/cmTC_71846.dir/CheckSymbolExists.c.o: In function `main':
+CheckSymbolExists.c:(.text+0x1b): undefined reference to `pthread_create'
+collect2: error: ld returned 1 exit status
+CMakeFiles/cmTC_71846.dir/build.make:97: recipe for target 'cmTC_71846' failed
+make[1]: *** [cmTC_71846] Error 1
+make[1]: Leaving directory '/home/crivac/robocomp/components/robocomp-crdt/crdt4/CMakeFiles/CMakeTmp'
+Makefile:126: recipe for target 'cmTC_71846/fast' failed
+make: *** [cmTC_71846/fast] Error 2
+
+File /home/crivac/robocomp/components/robocomp-crdt/crdt4/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include <pthread.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef pthread_create
+  return ((int*)(&pthread_create))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+
+Determining if the function pthread_create exists in the pthreads failed with the following output:
+Change Dir: /home/crivac/robocomp/components/robocomp-crdt/crdt4/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_1db86/fast"
+/usr/bin/make -f CMakeFiles/cmTC_1db86.dir/build.make CMakeFiles/cmTC_1db86.dir/build
+make[1]: Entering directory '/home/crivac/robocomp/components/robocomp-crdt/crdt4/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_1db86.dir/CheckFunctionExists.c.o
+/usr/bin/cc   -DCHECK_FUNCTION_EXISTS=pthread_create   -o CMakeFiles/cmTC_1db86.dir/CheckFunctionExists.c.o   -c /usr/share/cmake-3.10/Modules/CheckFunctionExists.c
+Linking C executable cmTC_1db86
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_1db86.dir/link.txt --verbose=1
+/usr/bin/cc  -DCHECK_FUNCTION_EXISTS=pthread_create    -rdynamic CMakeFiles/cmTC_1db86.dir/CheckFunctionExists.c.o  -o cmTC_1db86 -lpthreads 
+/usr/bin/ld: cannot find -lpthreads
+collect2: error: ld returned 1 exit status
+CMakeFiles/cmTC_1db86.dir/build.make:97: recipe for target 'cmTC_1db86' failed
+make[1]: *** [cmTC_1db86] Error 1
+make[1]: Leaving directory '/home/crivac/robocomp/components/robocomp-crdt/crdt4/CMakeFiles/CMakeTmp'
+Makefile:126: recipe for target 'cmTC_1db86/fast' failed
+make: *** [cmTC_1db86/fast] Error 2
+
+
