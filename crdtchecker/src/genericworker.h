@@ -55,14 +55,12 @@ public:
 	QMutex *mutex;
 
 
-	DSRD4syncPrx dsrd4sync_proxy;
-	DSRD4Prx dsrd4_proxy;
-	DSRD4recvPrx dsrd4recv_proxy;
+	DSRD4sendPrx dsrd4send1_proxy;
+	DSRD4sendPrx dsrd4send2_proxy;
+	DSRD4sendPrx dsrd4send3_proxy;
+	DSRD4sendPrx dsrd4send4_proxy;
 
-	virtual bool sendSync(const string &name, const Delta &d) = 0;
-	virtual void getData(Delta &d) = 0;
-	virtual void sendData(const Delta &d) = 0;
-	virtual void sendPortDSRD4(const string &port) = 0;
+	virtual void finish(const string &name) = 0;
 
 protected:
 	QTimer timer;

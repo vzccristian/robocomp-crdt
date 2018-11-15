@@ -658,7 +658,7 @@ struct NeighborsAttribs
         {
             return false;
         }
-        for (int i = 0;i < ((int) neighbors_attribs.size()); ++i) {
+        for (int i = 0;i < neighbors_attribs.size(); ++i) {
             if (neighbors_attribs[i] != rhs_.neighbors_attribs[i]){}
                 return false;
         }

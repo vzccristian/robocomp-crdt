@@ -20,25 +20,21 @@
 #include <Ice/Proxy.h>
 
 
-
 /**
 * \brief Default constructor
 */
-SpecificWorker::SpecificWorker(MapPrx& mprx) : GenericWorker(mprx)
-{
+SpecificWorker::SpecificWorker(MapPrx &mprx) : GenericWorker(mprx) {
 
 }
 
 /**
 * \brief Default destructor
 */
-SpecificWorker::~SpecificWorker()
-{
+SpecificWorker::~SpecificWorker() {
 
 }
 
-bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
-{
+bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params) {
 //     cout << "Params" << endl;
 //     for (auto const& x : params)
 //         cout << x.first << ':' << x.second.value << endl;
@@ -48,13 +44,14 @@ bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
     id = params["id"].value;
     synchronized = false;
 
-    srand (time(NULL));
+    srand(time(NULL));
 
     i = 0;
     max_nodes = rand() % MAX_RANDOM + MIN_RANDOM;
-    nodes = aworset<DS>();
+
+    nodes = aworset<DS>("nodes");
     nodes_uid.resize(max_nodes);
-    cout <<"[ID:"<<id<<"]-> inicio:"<<i<<" maximo: "<<max_nodes<<endl;
+    cout << "[ID:" << id << "]-> inicio:" << i << " maximo: " << max_nodes << endl;
 
     timer.start(Period);
     return true;
@@ -65,23 +62,22 @@ bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params)
  *
  */
 
-void SpecificWorker::initValues()
-{
+void SpecificWorker::initValues() {
     int j = 0;
     while (j < 5) {
-        aworset<DS> aux0("uid-"+to_string(j));
+        aworset<DS> aux0("uid-" + to_string(j));
 
         RoboCompDSRD4::DS ds;
         ds.id = id;
         ds.neighbors = vector<RoboCompDSRD4::NeighborsAttribs>();
         ds.rcvalue.value = rand() % 25000 + 10000;
-        ds.crdt_data.uid = "uid-"+to_string(j);
+        ds.crdt_data.uid = "uid-" + to_string(j);
         ds.crdt_data.cc = 0;
         ds.crdt_data.dc = 0;
 
         // Introducir para cambiar contexto random
         int veces = rand() % 5 + 1;
-        for (int u=0; u<veces; u++)
+        for (int u = 0; u < veces; u++)
             nodes.join(aux0.add(ds));
         j++;
 
@@ -100,18 +96,18 @@ void SpecificWorker::initValues()
 void SpecificWorker::newRandomValue(string uid) {
     aworset<DS> aux0(uid); // Creacion de aux
     std::vector<DS> dArray; // Array para enviar deltas
-
+    aworset<DS> delta;
     RoboCompDSRD4::DS ds;
     ds.neighbors = vector<RoboCompDSRD4::NeighborsAttribs>(); // Para nodos vecinos
     NeighborsAttribs na;
 
     RoboCompDSRD4::Pair p;
 
-    p.key="hola";
-    p.value="adios";
+    p.key = "hola";
+    p.value = "adios";
 
-    for(int j=0; j<5; j++) { // Ejemplo vecinos
-        na.uid = "uid-"+to_string(j);
+    for (int j = 0; j < 5; j++) { // Ejemplo vecinos
+        na.uid = "uid-" + to_string(j);
         na.neighbors_attribs.push_back(p);
         ds.neighbors.push_back(na); // Vecinos OK
     }
@@ -129,75 +125,109 @@ void SpecificWorker::newRandomValue(string uid) {
     //     for (int u=0; u<veces; u++)
     //         nodes.join(aux0.add(ds));
 
-    cout << "New value: " << ds << endl;
-    nodes.join(aux0.add(ds)); // Insertar el dato
+
+    try {
+        delta = aux0.add(ds);
+
+        pair<DS, pair<int, int>> n = nodes.getNodes(uid); // For context
+        if(n.second.first>0 || n.second.second > 0)
+        {
+            aux0.context().setContext(uid, n.second.first, n.second.second);
+            delta = aux0.add(ds);
+        }
+        cout << "New value: " << aux0 << endl;
+        nodes.join(delta); // Insertar el dato
+    } catch (exception e) {
+        cout << "Error" << endl;
+    }
 
     // Preparar para enviar
-    pair<int, int> indContext  = nodes.context().get(uid);
-    ds.crdt_data.cc = indContext.first; // Asignacion de concepto antes de enviar
-    ds.crdt_data.dc = indContext.second;
-
+    list<pair<int, int>> indContext = nodes.context().get(uid);
+    ds.crdt_data.cc = indContext.back().first; // Asignacion de concepto antes de enviar
+    ds.crdt_data.dc = indContext.back().second;
     dArray.push_back(ds);
     dsrd4_proxy->sendData(dArray); // Publicacion de datos
 
 }
 
 
-
-void SpecificWorker::compute()
-{
+void SpecificWorker::compute() {
     QMutexLocker locker(mutex);
     // Sync inicial
     if (!synchronized) {
         dsrd4_proxy->sendPortDSRD4(endpoint); // Publish my port for a sync
-        while (!synchronized and i<5) {
-            cout << ".."<<endl;
+        while (!synchronized and i < 5) {
+            cout << ".." << endl;
             i++;
             if (!synchronized)
-                sleep(0.5);
+                sleep(1);
         }
-        if (i==5) {
+        if (i == 5) {
             cout << "Asumo que soy el primero." << endl;
+            i = 0;
             synchronized = true;
-            initValues();
+//            initValues();
             cout << "|| ---- Compute  ---- ||" << endl;
         }
     }
 
-    if (i<MAX_RANDOM) {
-        newRandomValue("uid-"+to_string(i*stoi(id)));
+    if (i < MAX_RANDOM) {
+        newRandomValue("uid-" + to_string(i * stoi(id)));
         i++;
+    } else if (i == MAX_RANDOM) {
+        cout << "END->NODES: \n" << nodes << endl;
+        dsrd4recv_proxy->finish(id);
+        i++;
+        cout << "END " << i << " " << endl;
     } else {
-        cout <<"NODES: \n"<< nodes << endl;
-        ofstream myfile;
-        myfile.open ("nodes-"+id+".txt", std::ofstream::out | std::ofstream::trunc);
+        myfile.open("nodes-" + id + ".txt", std::ofstream::out | std::ofstream::trunc);
         myfile << nodes;
         myfile.close();
-        sleep(2);
     }
 }
+
+/*
+ * Obtener nodos en formato array
+ */
+std::vector<DS> SpecificWorker::getNodesArray() {
+    std::vector<DS> aux;
+    list<pair<int, int>> indContext;
+    for (auto x : nodes.readAsList()) {
+        indContext = nodes.context().get(x.second.crdt_data.uid);
+        x.second.crdt_data.cc = x.first;
+        x.second.crdt_data.dc = indContext.back().second; //TODO. Check
+        aux.push_back(x.second);
+    }
+    return aux;
+}
+
 
 /*
  * Callback para sincronización inicial
  */
 
-bool SpecificWorker::sendSync(const string &name, const Delta &d)
-{
-    cout << "<-------------- Somebody is writting initial sync... (" << name <<")"<< endl;
-    cout << "Data: "<< d << endl;
-    for (auto const& x : d) {
-        if (x.id != id) { // Omito mis propios datos
-            aworset<DS> aworsetAux (x.crdt_data.uid); //Create node
-            RoboCompDSRD4::DS aux = (RoboCompDSRD4::DS) x; //Delta to RoboCompDSRD3
-            aworsetAux.add(aux); // Insertar 1 vez. Contexto vacio.
-            aworsetAux.context().setContext(aux.crdt_data.uid, aux.crdt_data.cc-1, aux.crdt_data.dc-1); // Insertar con contexto anterior
-            aworsetAux.add(aux); // Volver a insertar para actualizar datos completos
-//             cout << "Anado a aworset:"<< aworsetAux << endl;
-            nodes.join(aworsetAux); // Join delta
+bool SpecificWorker::sendSync(const string &name, const Delta &d) {
+    if (!synchronized) {
+        cout << "<-------------- Somebody is writting initial sync... (" << name << ")" << endl;
+        aworset<DS> delta;
+        for (auto const &x : d) {
+            if (x.id != id) { // Omito mis propios datos
+                aworset<DS> aworsetAux(x.crdt_data.uid); //Create node
+                RoboCompDSRD4::DS aux = (RoboCompDSRD4::DS) x; //Delta to RoboCompDSRD3
+                delta = aworsetAux.add(aux);
+                if (x.crdt_data.cc-1 > 0)
+                {
+                    aworsetAux.context().setContext(x.crdt_data.uid, x.crdt_data.cc-1, x.crdt_data.dc-1);
+                    delta = aworsetAux.add(aux);
+                }
+//                cout <<" --> Anado a aworset:"<< aworsetAux << endl;
+                nodes.join(delta);
+            }
         }
+//        cout << nodes << endl;
+        cout << "<-------------- Sync nodes completed " << endl;
+        synchronized = true;
     }
-    synchronized = true;
-    cout << "Sync nodes " << nodes << endl;
     return synchronized;
 }
 
@@ -207,24 +237,22 @@ bool SpecificWorker::sendSync(const string &name, const Delta &d)
  *
  */
 
-void SpecificWorker::sendData(const Delta &d)
-{
-    for (auto& x : d) {
-        aworset<DS> aworsetAux (x.crdt_data.uid); //Create node
-        RoboCompDSRD4::DS aux = (RoboCompDSRD4::DS) x; //Delta to RoboCompDSRD3
+void SpecificWorker::sendData(const Delta &d) {
+    for (auto &x : d) {
+        if (x.id != id) {
+            aworset<DS> aworsetAux(x.crdt_data.uid); //Create node
+            aworset<DS> delta;
+            RoboCompDSRD4::DS aux = (RoboCompDSRD4::DS) x; //Delta to RoboCompDSRD3
 
-        aworsetAux.add(aux);
-        aworsetAux.context().setContext(aux.crdt_data.uid, aux.crdt_data.cc-1, aux.crdt_data.dc-1);
-        aworsetAux.add(aux);
-       
-// Iteracion        
-//         auto it = std::next(aworsetAux.read().begin(), 0);
-//         cout << *it << endl;
-//         nodes.add(*it);
-//             cout << "RECV-VALUE: "<<aux<<endl;
-        
-        aworsetAux.add(aux);
-        nodes.join(aworsetAux);
+            delta = aworsetAux.add(aux);
+            if (aux.crdt_data.cc-1 > 0)
+            {
+                aworsetAux.context().setContext(x.crdt_data.uid, x.crdt_data.cc-1, x.crdt_data.dc-1);
+                delta = aworsetAux.add(aux);
+            }
+//            cout <<" --> Anado a aworset:"<< aworsetAux << endl;
+            nodes.join(delta);
+        }
     }
 }
 
@@ -233,33 +261,21 @@ void SpecificWorker::sendData(const Delta &d)
  *  Interfaz para indicar el puerto donde se implementa el callback
  */
 
-void SpecificWorker::sendPortDSRD4(const string &port)
-{
+void SpecificWorker::sendPortDSRD4(const string &port) {
     if (endpoint != port) {
-        cout << "--------------> Somebody ("<<port<<") needs initial sync.("<<proxy<<")"<<endl;
-        string aux = proxy.replace(proxy.end()-5, proxy.end(), port);
+        cout << "--------------> Somebody (" << port << ") needs initial sync.(" << proxy << ")" << endl;
+        string aux = proxy.replace(proxy.end() - 5, proxy.end(), port);
         cout << aux << endl;
         DSRD4syncPrx p = DSRD4syncPrx::uncheckedCast(Ice::Application::communicator()->stringToProxy(aux)); // Hot proxy
-        cout << "-----------------> proxy created to: "<<aux<<endl;
+        cout << "-----------------> proxy created to: " << aux << endl;
+        cout << nodes << endl;
         std::vector<DS> array = getNodesArray();
-        cout << "Sync now > "<<array<<endl;
-        p->sendSync("comp"+id+"-"+port, array);
-        cout << "Sync sent > "<<array<<endl;
+        p->sendSync("comp" + id + "-" + port, array);
+//        cout << "Sync sent > "<<array.size()<<"> "<<array<<endl;
     }
 }
 
-/*
- * Obtener nodos en formato array
- */
-std::vector<DS> SpecificWorker::getNodesArray() {
-    std::vector<DS> aux;
-    for (auto x : nodes.read())  {
-        pair<int, int> indContext = nodes.context().get(x.crdt_data.uid);
-        x.crdt_data.cc = indContext.first;
-        x.crdt_data.dc = indContext.second;
-        aux.push_back(x);
-    }
-    return aux;
+
+void SpecificWorker::getData(Delta &d) {
+    d = getNodesArray();
 }
-
-

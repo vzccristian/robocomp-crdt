@@ -38,10 +38,7 @@ public:
 	~SpecificWorker();
 	bool setParams(RoboCompCommonBehavior::ParameterList params);
 
-	bool sendSync(const string &name, const Delta &d);
-	void getData(Delta &d);
-	void sendData(const Delta &d);
-	void sendPortDSRD4(const string &port);
+	void finish(const string &name);
 
 public slots:
 	void compute();

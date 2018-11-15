@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<rcmanager>
+
+ <generalInformation>
+  <editor path="kate" dock="false" />
+  <timeouts fixed="1000.0" blink="300.0" />
+  <clicks switch="2.0" interval="400.0" />
+  <graph alpha="80.0" active="true" scale="200.0" />
+  <graphTiming idletime="1000.0" focustime="500.0" fasttime="10.0" fastperiod="2000.0" />
+  <simulation hookes="0.07" springlength="0.5" friction="0.4" step="0.5" fieldforce="20000.0" />
+ </generalInformation>
+
+
+ <node alias="crdt1" endpoint="commonbehavior:tcp -p 12101">
+  <dependence alias="storm" /> 
+  <dependence alias="crdtchecker" />
+  <workingDir path="/home/robocomp" />
+  <upCommand command="rcremote localhost crdt1 /home/robocomp/robocomp/components/robocomp-crdt/crdt4  bin/crdt4 etc/config" />
+  <downCommand command="killall -9 crdt4" />
+  <configFile path="/home/robocomp/robocomp/components/robocomp-crdt/crdt4/etc/config" />
+  <xpos value="70" />
+  <ypos value="0" />
+  <radius value="15.0" />
+  <color value="#FF3333" />
+ </node>
+
+ <node alias="crdt2" endpoint="commonbehavior:tcp -p 12102">
+  <dependence alias="storm" />
+  <dependence alias="crdtchecker" />
+  <workingDir path="/home/crivac/robocomp" />
+  <upCommand command="rcremote localhost crdt2 /home/robocomp/robocomp/components/robocomp-crdt/crdt4  bin/crdt4 etc/config2" />
+  <downCommand command="killall -9 crdt4" />
+  <configFile path="/home/robocomp/robocomp/components/robocomp-crdt/crdt4/etc/config2" />
+  <xpos value="70" />
+  <ypos value="100" />
+  <radius value="15.0" />
+  <color value="#FF3333" />
+ </node>
+ 
+ <node alias="crdt3" endpoint="commonbehavior:tcp -p 12103">
+  <dependence alias="storm" />
+  <dependence alias="crdtchecker" />
+  <workingDir path="/home/crivac/robocomp" />
+  <upCommand command="rcremote localhost crdt3 /home/robocomp/robocomp/components/robocomp-crdt/crdt4  bin/crdt4 etc/config3" />
+  <downCommand command="killall -9 crdt4" />
+  <configFile path="/home/robocomp/robocomp/components/robocomp-crdt/crdt4/etc/config2" />
+  <xpos value="70" />
+  <ypos value="200" />
+  <radius value="15.0" />
+  <color value="#FF3333" />
+ </node>
+ 
+  <node alias="crdt4" endpoint="commonbehavior:tcp -p 12104">
+  <dependence alias="storm" />
+  <dependence alias="crdtchecker" />
+  <workingDir path="/home/crivac/robocomp" />
+  <upCommand command="rcremote localhost crdt4 /home/robocomp/robocomp/components/robocomp-crdt/crdt4  bin/crdt4 etc/config4" />
+  <downCommand command="killall -9 crdt4" />
+  <configFile path="/home/robocomp/robocomp/components/robocomp-crdt/crdt4/etc/config2" />
+  <xpos value="70" />
+  <ypos value="300" />
+  <radius value="15.0" />
+  <color value="#FF3333" />
+ </node>
+ 
+  <node alias="crdtchecker" endpoint="commonbehavior:tcp -p 12105">
+  <dependence alias="storm" />    
+  <workingDir path="/home/crivac/robocomp" />
+  <upCommand command="rcremote localhost crdtchecker /home/robocomp/robocomp/components/robocomp-crdt/crdtchecker   /home/robocomp/robocomp/components/robocomp-crdt/crdtchecker/bin/crdtchecker /home/robocomp/robocomp/components/robocomp-crdt/crdtchecker/etc/config" />
+  <downCommand command="killall -9 crdtchecker" />
+  <configFile path="/home/robocomp/robocomp/components/robocomp-crdt/crdt4/etc/config2" />
+  <xpos value="150" />
+  <ypos value="120" />
+  <radius value="15.0" />
+  <color value="#FF3333" />
+ </node>
+
+ 
+ <node alias="storm" endpoint="IceStorm/TopicManager:default -h localhost -p 9999">
+  <workingDir path="/opt/robocomp/" />
+  <upCommand command="rcremote localhost storm /opt/robocomp/ rcnode" />
+  <downCommand command="killall -9 icebox" />
+  <configFile path="/opt/robocomp/etc/rcnode.conf" />
+  <xpos value="-12.5219184602" />
+  <ypos value="150" />
+  <radius value="10.0" />
+  <color value="#FF3333" />
+ </node>
+
+
+</rcmanager>

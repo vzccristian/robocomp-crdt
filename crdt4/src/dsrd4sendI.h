@@ -16,38 +16,29 @@
  *    You should have received a copy of the GNU General Public License
  *    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
  */
+#ifndef DSRD4SEND_H
+#define DSRD4SEND_H
 
-/**
-       \brief
-       @author authorname
-*/
+// Ice includes
+#include <Ice/Ice.h>
+#include <DSRD4.h>
 
+#include <config.h>
+#include "genericworker.h"
 
+using namespace RoboCompDSRD4;
 
-#ifndef SPECIFICWORKER_H
-#define SPECIFICWORKER_H
-
-#include <genericworker.h>
-#include <innermodel/innermodel.h>
-
-class SpecificWorker : public GenericWorker
+class DSRD4sendI : public virtual RoboCompDSRD4::DSRD4send
 {
-Q_OBJECT
 public:
-	SpecificWorker(MapPrx& mprx);
-	~SpecificWorker();
-	bool setParams(RoboCompCommonBehavior::ParameterList params);
+DSRD4sendI(GenericWorker *_worker);
+	~DSRD4sendI();
 
-	bool sendSync(const string &name, const Delta &d);
-	void getData(Delta &d);
-	void sendData(const Delta &d);
-	void sendPortDSRD4(const string &port);
-
-public slots:
-	void compute();
+	void getData( Delta  &d, const Ice::Current&);
 
 private:
-	InnerModel *innerModel;
+
+	GenericWorker *worker;
 
 };
 

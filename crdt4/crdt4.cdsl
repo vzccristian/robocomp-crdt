@@ -5,8 +5,8 @@ Component crdt4
 	{
 		subscribesTo DSRD4;
 		publishes DSRD4;
-		requires DSRD4sync;
-		implements DSRD4sync;
+		requires DSRD4sync, DSRD4recv;
+		implements DSRD4sync, DSRD4send;
 	};
 	language Cpp;
 };

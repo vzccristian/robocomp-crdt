@@ -29,7 +29,7 @@
 
 #define NUM_THREADS 100
 #define MAX_IDS 500
-#define MAX_RANDOM 2000
+#define MAX_RANDOM 200
 #define MIN_RANDOM 0
 
 
@@ -61,7 +61,9 @@ public:
     void initValues();
     void newRandomValue(string uid);
     std::vector<DS> getNodesArray();
+
 	bool sendSync(const string &name,const Delta &d);
+    void getData(Delta &d);
 	void sendData(const Delta &d);
 	void sendPortDSRD4(const string &port);
 
@@ -74,6 +76,7 @@ private:
     bool synchronized;
     string endpoint, proxy, id;
     aworset<DS> nodes;
+	ofstream myfile;
     std::vector<string> nodes_uid;
 
 };

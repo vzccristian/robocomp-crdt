@@ -29,6 +29,9 @@
 
 #include <genericworker.h>
 #include <innermodel/innermodel.h>
+#include "delta-crdts.cc"
+
+#define MAX_JOBS 4
 
 class SpecificWorker : public GenericWorker
 {
@@ -38,16 +41,18 @@ public:
 	~SpecificWorker();
 	bool setParams(RoboCompCommonBehavior::ParameterList params);
 
-	bool sendSync(const string &name, const Delta &d);
-	void getData(Delta &d);
-	void sendData(const Delta &d);
-	void sendPortDSRD4(const string &port);
+	void checkData(const Delta &d);
+	void finish(const string &name);
 
 public slots:
 	void compute();
 
 private:
 	InnerModel *innerModel;
+	std::string jobs[MAX_JOBS];
+    aworset<DS> nodes[MAX_JOBS];
+	int actualJobs;
+	bool same;
 
 };
 

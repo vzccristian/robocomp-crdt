@@ -1,16 +1,17 @@
-CommonBehavior.Endpoints=tcp -p 12101
+CommonBehavior.Endpoints=tcp -p 12102
 
 
 # Endpoints for implemented interfaces
-DSRD4sync.Endpoints=tcp -p 13200
+DSRD4sync.Endpoints=tcp -p 13102
+DSRD4send.Endpoints=tcp -p 13202
 
 # Endpoints for subscriptions
-DSRD4Topic.Endpoints=tcp -p 13201
+DSRD4Topic.Endpoints=tcp -p 13302
 
 
 # Proxies for required interfaces
-DSRD4syncProxy = dsrd4sync:tcp -h localhost -p 13100
-
+DSRD4syncProxy = dsrd4sync:tcp -h localhost -p 13402
+DSRD4recvProxy = dsrd4recv:tcp -h localhost -p 15001
 
 # This property is used by the clients to connect to IceStorm.
 TopicManager.Proxy=IceStorm/TopicManager:default -p 9999

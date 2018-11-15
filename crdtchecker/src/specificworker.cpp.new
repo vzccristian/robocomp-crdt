@@ -72,27 +72,9 @@ void SpecificWorker::compute()
 }
 
 
-bool SpecificWorker::sendSync(const string &name, const Delta &d)
+void SpecificWorker::finish(const string &name)
 {
 //implementCODE
-
-}
-
-void SpecificWorker::getData(Delta &d)
-{
-//implementCODE
-
-}
-
-void SpecificWorker::sendData(const Delta &d)
-{
-//subscribesToCODE
-
-}
-
-void SpecificWorker::sendPortDSRD4(const string &port)
-{
-//subscribesToCODE
 
 }
 

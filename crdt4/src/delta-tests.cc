@@ -267,6 +267,7 @@ void test_aworset()
     do1.join(o1.add('b'));
     cout << o1 << endl;
     cout << do1 << endl;
+    cout << "--------------------" << endl;
     do1.join(o2.add('x'));
     do1.join(o2.add('y'));
     do1.join(o2.add('z'));
@@ -280,20 +281,31 @@ void test_aworset()
 //     do2.join(o2.rmv('b'));
     cout << o2 << endl;
 
+
     aworset<char> o3 = join(o1,o2);
     cout << o3 << endl;
 
     aworset<char> o4 = join(join(o1,do1),join(o2,do1));
     cout << o4 << endl;
-    cout << o3.in('c') << o3.in('b') << endl;
+    cout << "IN " << o3.in('c') << o3.in('b') << endl;
 
     assert (o3.in('c') == true &&  o3.in('b') == true);
 
+    cout << "--------------------" << endl;
     aworset<string> o5("idz");
+    aworset<string> o6("idz");
+    aworset<string> delta;
     o5.add("hello");
     o5.add("world");
     o5.add("my");
-    cout << o5 << endl;
+    cout <<"o5 "<< o5 << endl;
+    cout << "--------------------" << endl;
+    o6.add("cristian");
+    o6.context().setContext("idz",3,0);
+    delta = o6.add("cristian");
+    cout <<"o6 "<<  o6 << endl;
+    o5.join(delta);
+    cout <<"o5 "<< o5 << endl;
     cout << "--- END Testing: aworset --\n";
 }
 
@@ -1224,7 +1236,7 @@ int main(int argc, char * argv[])
 //   test_gcounter();
 //   test_pncounter();
 //   test_lexcounter();
-// test_aworset();
+ test_aworset();
 //      test_rworset();
 //      test_mvreg();
 //   test_maxord();
@@ -1233,7 +1245,7 @@ int main(int argc, char * argv[])
 //   test_rwlwwset();
 //   test_ewflag();
 //   test_dwflag();
-    test_ormap();
+//    test_ormap();
 //   test_rwlwwset();
 //   test_bag();
 //   test_rwcounter();
@@ -1250,9 +1262,9 @@ int main(int argc, char * argv[])
 //   example_pncounter();
 //   example_lexcounter();
 //   example_ccounter();
-//   example_aworset();
+   example_aworset();
 //   example_rworset();
-     example_ormap();
+//     example_ormap();
 //   example_gmap();
 //   example_bcounter();
 //   example_orseq();

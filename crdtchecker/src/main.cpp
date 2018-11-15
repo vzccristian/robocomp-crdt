@@ -18,11 +18,11 @@
  */
 
 
-/** \mainpage RoboComp::crdt4
+/** \mainpage RoboComp::crdtchecker
  *
  * \section intro_sec Introduction
  *
- * The crdt4 component...
+ * The crdtchecker component...
  *
  * \section interface_sec Interface
  *
@@ -34,7 +34,7 @@
  * ...
  *
  * \subsection install2_ssec Compile and install
- * cd crdt4
+ * cd crdtchecker
  * <br>
  * cmake . && make
  * <br>
@@ -52,7 +52,7 @@
  *
  * \subsection execution_ssec Execution
  *
- * Just: "${PATH_TO_BINARY}/crdt4 --Ice.Config=${PATH_TO_CONFIG_FILE}"
+ * Just: "${PATH_TO_BINARY}/crdtchecker --Ice.Config=${PATH_TO_CONFIG_FILE}"
  *
  * \subsection running_ssec Once running
  *
@@ -81,9 +81,7 @@
 #include "specificmonitor.h"
 #include "commonbehaviorI.h"
 
-#include <dsrd4syncI.h>
-#include <dsrd4sendI.h>
-#include <dsrd4I.h>
+#include <dsrd4recvI.h>
 
 #include <DSRD4.h>
 
@@ -94,10 +92,10 @@
 using namespace std;
 using namespace RoboCompCommonBehavior;
 
-class crdt4 : public RoboComp::Application
+class crdtchecker : public RoboComp::Application
 {
 public:
-	crdt4 (QString prfx) { prefix = prfx.toStdString(); }
+	crdtchecker (QString prfx) { prefix = prfx.toStdString(); }
 private:
 	void initialize();
 	std::string prefix;
@@ -107,14 +105,14 @@ public:
 	virtual int run(int, char*[]);
 };
 
-void ::crdt4::initialize()
+void ::crdtchecker::initialize()
 {
 	// Config file properties read example
 	// configGetString( PROPERTY_NAME_1, property1_holder, PROPERTY_1_DEFAULT_VALUE );
 	// configGetInt( PROPERTY_NAME_2, property1_holder, PROPERTY_2_DEFAULT_VALUE );
 }
 
-int ::crdt4::run(int argc, char* argv[])
+int ::crdtchecker::run(int argc, char* argv[])
 {
 	QCoreApplication a(argc, argv);  // NON-GUI application
 
@@ -133,9 +131,10 @@ int ::crdt4::run(int argc, char* argv[])
 
 	int status=EXIT_SUCCESS;
 
-	DSRD4Prx dsrd4_proxy;
-	DSRD4recvPrx dsrd4recv_proxy;
-	DSRD4syncPrx dsrd4sync_proxy;
+	DSRD4sendPrx dsrd4send1_proxy;
+	DSRD4sendPrx dsrd4send2_proxy;
+	DSRD4sendPrx dsrd4send3_proxy;
+	DSRD4sendPrx dsrd4send4_proxy;
 
 	string proxy, tmp;
 	initialize();
@@ -143,69 +142,70 @@ int ::crdt4::run(int argc, char* argv[])
 
 	try
 	{
-		if (not GenericMonitor::configGetString(communicator(), prefix, "DSRD4recvProxy", proxy, ""))
+		if (not GenericMonitor::configGetString(communicator(), prefix, "DSRD4send1Proxy", proxy, ""))
 		{
-			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy DSRD4recvProxy\n";
+			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy DSRD4sendProxy\n";
 		}
-		dsrd4recv_proxy = DSRD4recvPrx::uncheckedCast( communicator()->stringToProxy( proxy ) );
+		dsrd4send1_proxy = DSRD4sendPrx::uncheckedCast( communicator()->stringToProxy( proxy ) );
 	}
 	catch(const Ice::Exception& ex)
 	{
 		cout << "[" << PROGRAM_NAME << "]: Exception: " << ex;
 		return EXIT_FAILURE;
 	}
-	rInfo("DSRD4recvProxy initialized Ok!");
-	mprx["DSRD4recvProxy"] = (::IceProxy::Ice::Object*)(&dsrd4recv_proxy);//Remote server proxy creation example
+	rInfo("DSRD4sendProxy1 initialized Ok!");
+	mprx["DSRD4sendProxy1"] = (::IceProxy::Ice::Object*)(&dsrd4send1_proxy);//Remote server proxy creation example
 
 
 	try
 	{
-		if (not GenericMonitor::configGetString(communicator(), prefix, "DSRD4syncProxy", proxy, ""))
+		if (not GenericMonitor::configGetString(communicator(), prefix, "DSRD4send2Proxy", proxy, ""))
 		{
-			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy DSRD4syncProxy\n";
+			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy DSRD4sendProxy\n";
 		}
-		dsrd4sync_proxy = DSRD4syncPrx::uncheckedCast( communicator()->stringToProxy( proxy ) );
+		dsrd4send2_proxy = DSRD4sendPrx::uncheckedCast( communicator()->stringToProxy( proxy ) );
 	}
 	catch(const Ice::Exception& ex)
 	{
 		cout << "[" << PROGRAM_NAME << "]: Exception: " << ex;
 		return EXIT_FAILURE;
 	}
-	rInfo("DSRD4syncProxy initialized Ok!");
-	mprx["DSRD4syncProxy"] = (::IceProxy::Ice::Object*)(&dsrd4sync_proxy);//Remote server proxy creation example
+	rInfo("DSRD4sendProxy2 initialized Ok!");
+	mprx["DSRD4sendProxy2"] = (::IceProxy::Ice::Object*)(&dsrd4send2_proxy);//Remote server proxy creation example
 
-	IceStorm::TopicManagerPrx topicManager;
+
 	try
 	{
-		topicManager = IceStorm::TopicManagerPrx::checkedCast(communicator()->propertyToProxy("TopicManager.Proxy"));
+		if (not GenericMonitor::configGetString(communicator(), prefix, "DSRD4send3Proxy", proxy, ""))
+		{
+			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy DSRD4sendProxy\n";
+		}
+		dsrd4send3_proxy = DSRD4sendPrx::uncheckedCast( communicator()->stringToProxy( proxy ) );
 	}
-	catch (const Ice::Exception &ex)
+	catch(const Ice::Exception& ex)
 	{
-		cout << "[" << PROGRAM_NAME << "]: Exception: STORM not running: " << ex << endl;
+		cout << "[" << PROGRAM_NAME << "]: Exception: " << ex;
 		return EXIT_FAILURE;
 	}
+	rInfo("DSRD4sendProxy3 initialized Ok!");
+	mprx["DSRD4sendProxy3"] = (::IceProxy::Ice::Object*)(&dsrd4send3_proxy);//Remote server proxy creation example
 
-	IceStorm::TopicPrx dsrd4_topic;
-	while (!dsrd4_topic)
+
+	try
 	{
-		try
+		if (not GenericMonitor::configGetString(communicator(), prefix, "DSRD4send4Proxy", proxy, ""))
 		{
-			dsrd4_topic = topicManager->retrieve("DSRD4");
+			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy DSRD4sendProxy\n";
 		}
-		catch (const IceStorm::NoSuchTopic&)
-		{
-			try
-			{
-				dsrd4_topic = topicManager->create("DSRD4");
-			}
-			catch (const IceStorm::TopicExists&){
-				// Another client created the topic.
-			}
-		}
+		dsrd4send4_proxy = DSRD4sendPrx::uncheckedCast( communicator()->stringToProxy( proxy ) );
 	}
-	Ice::ObjectPrx dsrd4_pub = dsrd4_topic->getPublisher()->ice_oneway();
-	DSRD4Prx dsrd4 = DSRD4Prx::uncheckedCast(dsrd4_pub);
-	mprx["DSRD4Pub"] = (::IceProxy::Ice::Object*)(&dsrd4);
+	catch(const Ice::Exception& ex)
+	{
+		cout << "[" << PROGRAM_NAME << "]: Exception: " << ex;
+		return EXIT_FAILURE;
+	}
+	rInfo("DSRD4sendProxy4 initialized Ok!");
+	mprx["DSRD4sendProxy4"] = (::IceProxy::Ice::Object*)(&dsrd4send4_proxy);//Remote server proxy creation example
 
 
 
@@ -240,59 +240,19 @@ int ::crdt4::run(int argc, char* argv[])
 
 
 		// Server adapter creation and publication
-		if (not GenericMonitor::configGetString(communicator(), prefix, "DSRD4sync.Endpoints", tmp, ""))
+		if (not GenericMonitor::configGetString(communicator(), prefix, "DSRD4recv.Endpoints", tmp, ""))
 		{
-			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy DSRD4sync";
+			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy DSRD4recv";
 		}
-		Ice::ObjectAdapterPtr adapterDSRD4sync = communicator()->createObjectAdapterWithEndpoints("DSRD4sync", tmp);
-		DSRD4syncI *dsrd4sync = new DSRD4syncI(worker);
-		adapterDSRD4sync->add(dsrd4sync, communicator()->stringToIdentity("dsrd4sync"));
-		adapterDSRD4sync->activate();
-		cout << "[" << PROGRAM_NAME << "]: DSRD4sync adapter created in port " << tmp << endl;
-
-
-		// Server adapter creation and publication
-		if (not GenericMonitor::configGetString(communicator(), prefix, "DSRD4send.Endpoints", tmp, ""))
-		{
-			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy DSRD4send";
-		}
-		Ice::ObjectAdapterPtr adapterDSRD4send = communicator()->createObjectAdapterWithEndpoints("DSRD4send", tmp);
-		DSRD4sendI *dsrd4send = new DSRD4sendI(worker);
-		adapterDSRD4send->add(dsrd4send, communicator()->stringToIdentity("dsrd4send"));
-		adapterDSRD4send->activate();
-		cout << "[" << PROGRAM_NAME << "]: DSRD4send adapter created in port " << tmp << endl;
+		Ice::ObjectAdapterPtr adapterDSRD4recv = communicator()->createObjectAdapterWithEndpoints("DSRD4recv", tmp);
+		DSRD4recvI *dsrd4recv = new DSRD4recvI(worker);
+		adapterDSRD4recv->add(dsrd4recv, communicator()->stringToIdentity("dsrd4recv"));
+		adapterDSRD4recv->activate();
+		cout << "[" << PROGRAM_NAME << "]: DSRD4recv adapter created in port " << tmp << endl;
 
 
 
 
-
-		// Server adapter creation and publication
-		if (not GenericMonitor::configGetString(communicator(), prefix, "DSRD4Topic.Endpoints", tmp, ""))
-		{
-			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy DSRD4Proxy";
-		}
-		Ice::ObjectAdapterPtr DSRD4_adapter = communicator()->createObjectAdapterWithEndpoints("dsrd4", tmp);
-		DSRD4Ptr dsrd4I_ = new DSRD4I(worker);
-		Ice::ObjectPrx dsrd4 = DSRD4_adapter->addWithUUID(dsrd4I_)->ice_oneway();
-		IceStorm::TopicPrx dsrd4_topic;
-		if(!dsrd4_topic){
-		try {
-			dsrd4_topic = topicManager->create("DSRD4");
-		}
-		catch (const IceStorm::TopicExists&) {
-		//Another client created the topic
-		try{
-			dsrd4_topic = topicManager->retrieve("DSRD4");
-		}
-		catch(const IceStorm::NoSuchTopic&)
-		{
-			//Error. Topic does not exist
-			}
-		}
-		IceStorm::QoS qos;
-		dsrd4_topic->subscribeAndGetPublisher(qos, dsrd4);
-		}
-		DSRD4_adapter->activate();
 
 		// Server adapter creation and publication
 		cout << SERVER_FULL_NAME " started" << endl;
@@ -306,8 +266,6 @@ int ::crdt4::run(int argc, char* argv[])
 		// Run QT Application Event Loop
 		a.exec();
 
-		std::cout << "Unsubscribing topic: dsrd4 " <<std::endl;
-		dsrd4_topic->unsubscribe( dsrd4 );
 
 		status = EXIT_SUCCESS;
 	}
@@ -361,7 +319,7 @@ int main(int argc, char* argv[])
 			printf("Configuration prefix: <%s>\n", prefix.toStdString().c_str());
 		}
 	}
-	::crdt4 app(prefix);
+	::crdtchecker app(prefix);
 
 	return app.main(argc, argv, configFile.c_str());
 }

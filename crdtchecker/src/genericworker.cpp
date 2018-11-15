@@ -23,9 +23,10 @@
 GenericWorker::GenericWorker(MapPrx& mprx) :
 QObject()
 {
-	dsrd4recv_proxy = (*(DSRD4recvPrx*)mprx["DSRD4recvProxy"]);
-	dsrd4sync_proxy = (*(DSRD4syncPrx*)mprx["DSRD4syncProxy"]);
-	dsrd4_proxy = (*(DSRD4Prx*)mprx["DSRD4Pub"]);
+	dsrd4send1_proxy = (*(DSRD4sendPrx*)mprx["DSRD4sendProxy1"]);
+	dsrd4send2_proxy = (*(DSRD4sendPrx*)mprx["DSRD4sendProxy2"]);
+	dsrd4send3_proxy = (*(DSRD4sendPrx*)mprx["DSRD4sendProxy3"]);
+	dsrd4send4_proxy = (*(DSRD4sendPrx*)mprx["DSRD4sendProxy4"]);
 
 	mutex = new QMutex(QMutex::Recursive);
 

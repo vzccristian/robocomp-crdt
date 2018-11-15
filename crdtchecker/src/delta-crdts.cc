@@ -202,40 +202,33 @@ public:
         return  pair<list<pair<K,int>>,list<pair<K,int>>> (dataCC, dataDC);;
     }
 
-    list<pair<int, int>> get(K uid) {
-        list<pair<int, int>> l = list<pair<int, int>>();
-        pair<int, int> p = pair<int, int>(0, 0);
-        for (const auto &kcc : cc) {
-            p.first = 0;
-            p.second = 0;
-            if (kcc.first == uid) {
-                p.first = kcc.second;
-                for (const auto &kdc : dc)
-                    if (kdc.first == uid) {
-                        p.second = kdc.second;
-                    }
-                l.push_back(p);
-             }
-        }
+    pair<int, int> get(K uid)
+    {
+        pair<int,int> p = pair<int,int>(0,0);
+        for (const auto & ki : cc)
+            if (ki.first == uid) {
+                p.first = ki.second;
+            }
+        for (const auto & ki : dc)
+            if (ki.first == uid) {
+                p.second = ki.second;
+            }
 //         cout << "get UID:"<< uid << " "<< p.first << " "<< p.second << endl;
-        return l;
+        return p;
     }
 
     void setContext(K uid, int _cc, int _dc)
     {
-        if (_cc > 0)
-        {
-            for (auto & ki : cc)
-                if (ki.first == uid)
-                    ki.second = _cc;
-//TODO:
+        for (auto & ki : cc)
+            if (ki.first == uid) {
+//                 cout << "Asigno _cc:"<<_cc<<" a "<<uid<<endl;
+                ki.second = _cc;
+            }
 //         for (auto & ki : dc)
 //             if (ki.first == uid) {
 //                 cout << "Asigno _dc:"<<_cc<<" a "<<uid<<endl;
 //                 ki.second = _dc;
 //             }
-        }
-
     }
 
     bool dotin (const pair<K,int> & d) const
@@ -356,7 +349,7 @@ public:
 
     dotcontext<K> cbase;
     dotcontext<K> & c;
-
+    int size;
     // if no causal context supplied, used base one
     dotkernel() : c(cbase) {}
     // if supplied, use a shared causal context
@@ -375,13 +368,12 @@ public:
     {
         output << "Kernel: DS ( ";
         for (const auto & dv : o.ds)
-        {
             output <<  dv.first.first << ":" << dv.first.second <<
                    "->" << dv.second << " ";
-        }
         output << ") ";
 
-        output<< o.c;
+        cout << o.c;
+
         return output;
     }
 
@@ -957,28 +949,9 @@ public:
     {
         set<E> res;
         for (const auto &dv : dk.ds)
-        {
-            cout <<"read"<< dv << endl;
             res.insert(dv.second);
-
-        }
-        cout << "res " << res << endl;
         return res;
     }
-
-    list<pair<int,E>> readAsList()
-    {
-        list<pair<int,E>> res;
-        for (const auto &dv : dk.ds)
-        {
-            pair<int,E> p = pair<int,E>(dv.first.second, dv.second);
-            res.push_back(p);
-        }
-//        for (auto v : res)
-//            std::cout << v << "\n";
-        return res;
-    }
-
 
     bool in (const E& val)
     {
@@ -989,23 +962,6 @@ public:
                 return true;
         }
         return false;
-    }
-
-    pair<E,pair<int, int> > getNodes (const K& uid)
-    {
-//        cout << "get" << uid << endl;
-        pair<E,pair<int, int> > d;
-        typename map<pair<K,int>,E>::iterator dsit;
-        for(dsit=dk.ds.begin(); dsit != dk.ds.end(); ++dsit)
-        {
-            if (dsit->first.first == uid)
-            {
-                list<pair<int,int>> lp = dk.c.get(uid);
-                d = pair<E,pair<int, int>> (dsit->second,lp.back());
-
-            }
-        }
-        return d;
     }
 
     aworset<E,K> add (const E& val)
@@ -1035,6 +991,10 @@ public:
         dk.join(o.dk);
         // Further optimization can be done by keeping for val x and id A
         // only the highest dot from A supporting x.
+    }
+
+    int size() {
+        return size;
     }
 };
 

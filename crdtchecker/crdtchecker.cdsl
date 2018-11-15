@@ -1,0 +1,10 @@
+import "DSRD4.idsl";
+Component crdtchecker
+{
+	Communications
+	{
+		implements DSRD4recv;
+		requires DSRD4send, DSRD4send, DSRD4send, DSRD4send;
+	};
+	language Cpp;
+};

@@ -73,4 +73,15 @@ ui_**.pyc
 .idea/
 /components/CMakeLists.txt
 
-ls
+crdt4/CMakeFiles/
+crdt4/CMakeCache\.txt
+crdt4/src/CMakeFiles/
+*.bak
+*.cbp
+*.new
+crdtchecker/cmake-build-debug/
+crdtchecker/CMakeFiles/
+crdtchecker/src/CMakeFiles/
+crdtchecker/src/crdtchecker_autogen/
+crdtchecker/CMakeCache\.txt
+crdtchecker/DoxyFile

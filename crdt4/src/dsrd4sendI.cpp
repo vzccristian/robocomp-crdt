@@ -1,5 +1,5 @@
 /*
- *    Copyright (C)2018 by YOUR NAME HERE
+ *    Copyright (C) 2018 by YOUR NAME HERE
  *
  *    This file is part of RoboComp
  *
@@ -16,39 +16,20 @@
  *    You should have received a copy of the GNU General Public License
  *    along with RoboComp.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include "dsrd4sendI.h"
 
-/**
-       \brief
-       @author authorname
-*/
-
-
-
-#ifndef SPECIFICWORKER_H
-#define SPECIFICWORKER_H
-
-#include <genericworker.h>
-#include <innermodel/innermodel.h>
-
-class SpecificWorker : public GenericWorker
+DSRD4sendI::DSRD4sendI(GenericWorker *_worker)
 {
-Q_OBJECT
-public:
-	SpecificWorker(MapPrx& mprx);
-	~SpecificWorker();
-	bool setParams(RoboCompCommonBehavior::ParameterList params);
+	worker = _worker;
+}
 
-	bool sendSync(const string &name, const Delta &d);
-	void getData(Delta &d);
-	void sendData(const Delta &d);
-	void sendPortDSRD4(const string &port);
 
-public slots:
-	void compute();
+DSRD4sendI::~DSRD4sendI()
+{
+}
 
-private:
-	InnerModel *innerModel;
+void DSRD4sendI::getData( Delta  &d, const Ice::Current&)
+{
+	worker->getData(d);
+}
 
-};
-
-#endif
