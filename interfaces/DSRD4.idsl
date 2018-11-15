@@ -41,6 +41,10 @@ module RoboCompDSRD4
 		void sendPortDSRD4(string port);
 	};
 	
+	/** \interface DSRD4sync
+	* @brief Interface sync at init
+	*/
+	
 	
 	interface DSRD4sync {
 		bool sendSync(string name, Delta d);
@@ -50,8 +54,12 @@ module RoboCompDSRD4
     * @brief interface DSRD4checker 
     */  
 	
-	interface DSRD4checker {
+	interface DSRD4recv {
 		void finish(string name);
+	};
+
+	interface DSRD4send {
+        void getData(out Delta d);
 	};
 	
 	
