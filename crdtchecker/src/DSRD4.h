@@ -658,7 +658,7 @@ struct NeighborsAttribs
         {
             return false;
         }
-        for (int i = 0;i < neighbors_attribs.size(); ++i) {
+        for (int i = 0;i < ((int) neighbors_attribs.size()); ++i) {
             if (neighbors_attribs[i] != rhs_.neighbors_attribs[i]){}
                 return false;
         }
@@ -818,7 +818,11 @@ struct DS
     ::RoboCompDSRD4::Neighbors neighbors;
     ::RoboCompDSRD4::CRDTData crdt_data;
     bool operator==(const DS &ds) const {
-        return (ds.id == id && ds.rcvalue == rcvalue && ds.neighbors == neighbors && ds.crdt_data == crdt_data);
+        return (ds.id == id && ds.rcvalue == rcvalue && ds.neighbors == neighbors);
+    };
+    bool operator!=(const DS &ds) const {
+//        return (ds.id == id && ds.rcvalue == rcvalue && ds.neighbors == neighbors && ds.crdt_data == crdt_data);
+        return (ds.id != id);
     };
     bool operator>(const DS &ds) const {
         return ds.crdt_data.uid < crdt_data.uid;

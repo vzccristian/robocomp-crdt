@@ -87,3 +87,5 @@ crdtchecker/CMakeCache\.txt
 crdtchecker/DoxyFile
 
 crdt4/nodes-*.txt
+
+*.bak*

@@ -57,37 +57,6 @@ bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params) {
     return true;
 }
 
-/*
- * Valores de inicio aleatorios.
- *
- */
-
-void SpecificWorker::initValues() {
-    int j = 0;
-    while (j < 5) {
-        aworset<DS> aux0("uid-" + to_string(j));
-
-        RoboCompDSRD4::DS ds;
-        ds.id = id;
-        ds.neighbors = vector<RoboCompDSRD4::NeighborsAttribs>();
-        ds.rcvalue.value = rand() % 25000 + 10000;
-        ds.crdt_data.uid = "uid-" + to_string(j);
-        ds.crdt_data.cc = 0;
-        ds.crdt_data.dc = 0;
-
-        // Introducir para cambiar contexto random
-        int veces = rand() % 5 + 1;
-        for (int u = 0; u < veces; u++)
-            nodes.join(aux0.add(ds));
-        j++;
-
-        if (j == 5) {
-            cout << "Nodes inicio: \n" << nodes << endl;
-            cout << "------------------------" << endl;
-        }
-    }
-}
-
 
 /*
  * Inserción de datos
@@ -153,24 +122,20 @@ void SpecificWorker::newRandomValue(string uid) {
 
 void SpecificWorker::compute() {
     QMutexLocker locker(mutex);
+
     // Sync inicial
     if (!synchronized) {
         dsrd4_proxy->sendPortDSRD4(endpoint); // Publish my port for a sync
-        while (!synchronized and i < 5) {
-            cout << ".." << endl;
+        while (!synchronized and i < 3) {
+            cout << "." << endl;
             i++;
             if (!synchronized)
                 sleep(1);
         }
-        if (i == 5) {
-            cout << "Asumo que soy el primero." << endl;
-            i = 0;
-            synchronized = true;
-//            initValues();
-            cout << "|| ---- Compute  ---- ||" << endl;
-        }
+        synchronized = true;
     }
 
+    // Simulation
     if (i < MAX_RANDOM) {
         newRandomValue("uid-" + to_string(i * stoi(id)));
         i++;
@@ -268,7 +233,7 @@ void SpecificWorker::sendPortDSRD4(const string &port) {
         cout << aux << endl;
         DSRD4syncPrx p = DSRD4syncPrx::uncheckedCast(Ice::Application::communicator()->stringToProxy(aux)); // Hot proxy
         cout << "-----------------> proxy created to: " << aux << endl;
-        cout << nodes << endl;
+//        cout << nodes << endl;
         std::vector<DS> array = getNodesArray();
         p->sendSync("comp" + id + "-" + port, array);
 //        cout << "Sync sent > "<<array.size()<<"> "<<array<<endl;

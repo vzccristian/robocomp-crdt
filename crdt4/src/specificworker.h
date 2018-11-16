@@ -27,9 +27,7 @@
 #ifndef SPECIFICWORKER_H
 #define SPECIFICWORKER_H
 
-#define NUM_THREADS 100
-#define MAX_IDS 500
-#define MAX_RANDOM 200
+#define MAX_RANDOM 50
 #define MIN_RANDOM 0
 
 

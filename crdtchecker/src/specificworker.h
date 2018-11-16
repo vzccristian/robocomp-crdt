@@ -30,8 +30,10 @@
 #include <genericworker.h>
 #include <innermodel/innermodel.h>
 #include "delta-crdts.cc"
+#include <stdlib.h>
 
 #define MAX_JOBS 4
+#define DEBUGGER 1
 
 class SpecificWorker : public GenericWorker
 {
