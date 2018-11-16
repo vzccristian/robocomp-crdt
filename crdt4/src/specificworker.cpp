@@ -141,8 +141,13 @@ void SpecificWorker::compute() {
         i++;
     } else if (i == MAX_RANDOM) {
         cout << "END->NODES: \n" << nodes << endl;
-        dsrd4recv_proxy->finish(id);
-        i++;
+        try {
+            dsrd4recv_proxy->finish(id);
+            i++;
+        } catch (const std::exception& ex){
+            cout << ".."<<endl;
+            sleep(3);
+        }
         cout << "END " << i << " " << endl;
     } else {
         myfile.open("nodes-" + id + ".txt", std::ofstream::out | std::ofstream::trunc);
@@ -241,6 +246,23 @@ void SpecificWorker::sendPortDSRD4(const string &port) {
 }
 
 
-void SpecificWorker::getData(Delta &d) {
+void SpecificWorker::getData(Delta &d, DSContext &dscontext) {
     d = getNodesArray();
+    vector<RoboCompDSRD4::CRDTData> crdtData = vector<RoboCompDSRD4::CRDTData>();
+    pair<map<string,int>, set<pair<string,int>>> contexto = nodes.context().getCcDc();
+    for (const auto & cc : contexto.first)
+    {
+
+        RoboCompDSRD4::CRDTData auxCrdtData;
+        auxCrdtData.uid = cc.first;
+        auxCrdtData.cc = cc.second;
+        for (const auto & dc : contexto.second)
+            if (dc.first == cc.first)
+            {
+                auxCrdtData.dc = dc.second;
+                break;
+            }
+        crdtData.push_back(auxCrdtData);
+    }
+    dscontext = crdtData;
 }

@@ -58,8 +58,10 @@ module RoboCompDSRD4
 		void finish(string name);
 	};
 
+    sequence<CRDTData> DSContext;
+
 	interface DSRD4send {
-        void getData(out Delta d);
+        void getData(out Delta d, out DSContext dscontext);
 	};
 	
 	

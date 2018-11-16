@@ -28,8 +28,8 @@ DSRD4sendI::~DSRD4sendI()
 {
 }
 
-void DSRD4sendI::getData( Delta  &d, const Ice::Current&)
+void DSRD4sendI::getData( Delta  &d,  DSContext  &dscontext, const Ice::Current&)
 {
-	worker->getData(d);
+	worker->getData(d, dscontext);
 }
 

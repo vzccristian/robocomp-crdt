@@ -134,28 +134,11 @@ int ::crdt4::run(int argc, char* argv[])
 	int status=EXIT_SUCCESS;
 
 	DSRD4Prx dsrd4_proxy;
-	DSRD4recvPrx dsrd4recv_proxy;
 	DSRD4syncPrx dsrd4sync_proxy;
+	DSRD4recvPrx dsrd4recv_proxy;
 
 	string proxy, tmp;
 	initialize();
-
-
-	try
-	{
-		if (not GenericMonitor::configGetString(communicator(), prefix, "DSRD4recvProxy", proxy, ""))
-		{
-			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy DSRD4recvProxy\n";
-		}
-		dsrd4recv_proxy = DSRD4recvPrx::uncheckedCast( communicator()->stringToProxy( proxy ) );
-	}
-	catch(const Ice::Exception& ex)
-	{
-		cout << "[" << PROGRAM_NAME << "]: Exception: " << ex;
-		return EXIT_FAILURE;
-	}
-	rInfo("DSRD4recvProxy initialized Ok!");
-	mprx["DSRD4recvProxy"] = (::IceProxy::Ice::Object*)(&dsrd4recv_proxy);//Remote server proxy creation example
 
 
 	try
@@ -173,6 +156,23 @@ int ::crdt4::run(int argc, char* argv[])
 	}
 	rInfo("DSRD4syncProxy initialized Ok!");
 	mprx["DSRD4syncProxy"] = (::IceProxy::Ice::Object*)(&dsrd4sync_proxy);//Remote server proxy creation example
+
+
+	try
+	{
+		if (not GenericMonitor::configGetString(communicator(), prefix, "DSRD4recvProxy", proxy, ""))
+		{
+			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy DSRD4recvProxy\n";
+		}
+		dsrd4recv_proxy = DSRD4recvPrx::uncheckedCast( communicator()->stringToProxy( proxy ) );
+	}
+	catch(const Ice::Exception& ex)
+	{
+		cout << "[" << PROGRAM_NAME << "]: Exception: " << ex;
+		return EXIT_FAILURE;
+	}
+	rInfo("DSRD4recvProxy initialized Ok!");
+	mprx["DSRD4recvProxy"] = (::IceProxy::Ice::Object*)(&dsrd4recv_proxy);//Remote server proxy creation example
 
 	IceStorm::TopicManagerPrx topicManager;
 	try

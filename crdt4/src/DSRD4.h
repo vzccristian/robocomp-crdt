@@ -133,6 +133,8 @@ struct DS
 
 using Delta = ::std::vector<::RoboCompDSRD4::DS>;
 
+using DSContext = ::std::vector<::RoboCompDSRD4::CRDTData>;
+
 using Ice::operator<;
 using Ice::operator<=;
 using Ice::operator>;
@@ -214,7 +216,13 @@ public:
 
     static const ::std::string& ice_staticId();
 
-    virtual void getData(::RoboCompDSRD4::Delta&, const ::Ice::Current&) = 0;
+    struct GetDataResult
+    {
+        ::RoboCompDSRD4::Delta d;
+        ::RoboCompDSRD4::DSContext dscontext;
+    };
+
+    virtual void getData(::RoboCompDSRD4::Delta&, ::RoboCompDSRD4::DSContext&, const ::Ice::Current&) = 0;
     bool _iceD_getData(::IceInternal::Incoming&, const ::Ice::Current&);
 
     virtual bool _iceDispatch(::IceInternal::Incoming&, const ::Ice::Current&) override;
@@ -367,28 +375,34 @@ class DSRD4sendPrx : public virtual ::Ice::Proxy<DSRD4sendPrx, ::Ice::ObjectPrx>
 {
 public:
 
-    void getData(::RoboCompDSRD4::Delta& iceP_d, const ::Ice::Context& context = Ice::noExplicitContext)
+    void getData(::RoboCompDSRD4::Delta& iceP_d, ::RoboCompDSRD4::DSContext& iceP_dscontext, const ::Ice::Context& context = Ice::noExplicitContext)
     {
-        iceP_d = _makePromiseOutgoing<::RoboCompDSRD4::Delta>(true, this, &RoboCompDSRD4::DSRD4sendPrx::_iceI_getData, context).get();
+        auto result = _makePromiseOutgoing<::RoboCompDSRD4::DSRD4send::GetDataResult>(true, this, &RoboCompDSRD4::DSRD4sendPrx::_iceI_getData, context).get();
+        iceP_d = ::std::move(result.d);
+        iceP_dscontext = ::std::move(result.dscontext);
     }
 
     template<template<typename> class P = ::std::promise>
     auto getDataAsync(const ::Ice::Context& context = Ice::noExplicitContext)
-        -> decltype(::std::declval<P<::RoboCompDSRD4::Delta>>().get_future())
+        -> decltype(::std::declval<P<::RoboCompDSRD4::DSRD4send::GetDataResult>>().get_future())
     {
-        return _makePromiseOutgoing<::RoboCompDSRD4::Delta, P>(false, this, &RoboCompDSRD4::DSRD4sendPrx::_iceI_getData, context);
+        return _makePromiseOutgoing<::RoboCompDSRD4::DSRD4send::GetDataResult, P>(false, this, &RoboCompDSRD4::DSRD4sendPrx::_iceI_getData, context);
     }
 
     ::std::function<void()>
-    getDataAsync(::std::function<void(::RoboCompDSRD4::Delta)> response,
+    getDataAsync(::std::function<void(::RoboCompDSRD4::Delta, ::RoboCompDSRD4::DSContext)> response,
                  ::std::function<void(::std::exception_ptr)> ex = nullptr,
                  ::std::function<void(bool)> sent = nullptr,
                  const ::Ice::Context& context = Ice::noExplicitContext)
     {
-        return _makeLamdaOutgoing<::RoboCompDSRD4::Delta>(response, ex, sent, this, &RoboCompDSRD4::DSRD4sendPrx::_iceI_getData, context);
+        auto responseCb = [response](::RoboCompDSRD4::DSRD4send::GetDataResult&& result)
+        {
+            response(::std::move(result.d), ::std::move(result.dscontext));
+        };
+        return _makeLamdaOutgoing<::RoboCompDSRD4::DSRD4send::GetDataResult>(responseCb, ex, sent, this, &RoboCompDSRD4::DSRD4sendPrx::_iceI_getData, context);
     }
 
-    void _iceI_getData(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::RoboCompDSRD4::Delta>>&, const ::Ice::Context&);
+    void _iceI_getData(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::RoboCompDSRD4::DSRD4send::GetDataResult>>&, const ::Ice::Context&);
 
     static const ::std::string& ice_staticId();
 
@@ -511,1357 +525,1386 @@ using DSRD4sendPrxPtr = ::std::shared_ptr<DSRD4sendPrx>;
 
 #else // C++98 mapping
 
-namespace IceProxy
-{
+namespace IceProxy {
 
-namespace RoboCompDSRD4
-{
+    namespace RoboCompDSRD4 {
 
-class DSRD4;
-void _readProxy(::Ice::InputStream*, ::IceInternal::ProxyHandle< ::IceProxy::RoboCompDSRD4::DSRD4>&);
-::IceProxy::Ice::Object* upCast(::IceProxy::RoboCompDSRD4::DSRD4*);
+        class DSRD4;
 
-class DSRD4sync;
-void _readProxy(::Ice::InputStream*, ::IceInternal::ProxyHandle< ::IceProxy::RoboCompDSRD4::DSRD4sync>&);
-::IceProxy::Ice::Object* upCast(::IceProxy::RoboCompDSRD4::DSRD4sync*);
+        void _readProxy(::Ice::InputStream *, ::IceInternal::ProxyHandle<::IceProxy::RoboCompDSRD4::DSRD4> &);
 
-class DSRD4recv;
-void _readProxy(::Ice::InputStream*, ::IceInternal::ProxyHandle< ::IceProxy::RoboCompDSRD4::DSRD4recv>&);
-::IceProxy::Ice::Object* upCast(::IceProxy::RoboCompDSRD4::DSRD4recv*);
+        ::IceProxy::Ice::Object *upCast(::IceProxy::RoboCompDSRD4::DSRD4 *);
 
-class DSRD4send;
-void _readProxy(::Ice::InputStream*, ::IceInternal::ProxyHandle< ::IceProxy::RoboCompDSRD4::DSRD4send>&);
-::IceProxy::Ice::Object* upCast(::IceProxy::RoboCompDSRD4::DSRD4send*);
+        class DSRD4sync;
+
+        void _readProxy(::Ice::InputStream *, ::IceInternal::ProxyHandle<::IceProxy::RoboCompDSRD4::DSRD4sync> &);
+
+        ::IceProxy::Ice::Object *upCast(::IceProxy::RoboCompDSRD4::DSRD4sync *);
+
+        class DSRD4recv;
+
+        void _readProxy(::Ice::InputStream *, ::IceInternal::ProxyHandle<::IceProxy::RoboCompDSRD4::DSRD4recv> &);
+
+        ::IceProxy::Ice::Object *upCast(::IceProxy::RoboCompDSRD4::DSRD4recv *);
+
+        class DSRD4send;
+
+        void _readProxy(::Ice::InputStream *, ::IceInternal::ProxyHandle<::IceProxy::RoboCompDSRD4::DSRD4send> &);
+
+        ::IceProxy::Ice::Object *upCast(::IceProxy::RoboCompDSRD4::DSRD4send *);
+
+    }
 
 }
 
+namespace RoboCompDSRD4 {
+
+    class DSRD4;
+
+    ::Ice::Object *upCast(::RoboCompDSRD4::DSRD4 *);
+
+    typedef ::IceInternal::Handle<::RoboCompDSRD4::DSRD4> DSRD4Ptr;
+    typedef ::IceInternal::ProxyHandle<::IceProxy::RoboCompDSRD4::DSRD4> DSRD4Prx;
+    typedef DSRD4Prx DSRD4PrxPtr;
+
+    void _icePatchObjectPtr(DSRD4Ptr &, const ::Ice::ObjectPtr &);
+
+    class DSRD4sync;
+
+    ::Ice::Object *upCast(::RoboCompDSRD4::DSRD4sync *);
+
+    typedef ::IceInternal::Handle<::RoboCompDSRD4::DSRD4sync> DSRD4syncPtr;
+    typedef ::IceInternal::ProxyHandle<::IceProxy::RoboCompDSRD4::DSRD4sync> DSRD4syncPrx;
+    typedef DSRD4syncPrx DSRD4syncPrxPtr;
+
+    void _icePatchObjectPtr(DSRD4syncPtr &, const ::Ice::ObjectPtr &);
+
+    class DSRD4recv;
+
+    ::Ice::Object *upCast(::RoboCompDSRD4::DSRD4recv *);
+
+    typedef ::IceInternal::Handle<::RoboCompDSRD4::DSRD4recv> DSRD4recvPtr;
+    typedef ::IceInternal::ProxyHandle<::IceProxy::RoboCompDSRD4::DSRD4recv> DSRD4recvPrx;
+    typedef DSRD4recvPrx DSRD4recvPrxPtr;
+
+    void _icePatchObjectPtr(DSRD4recvPtr &, const ::Ice::ObjectPtr &);
+
+    class DSRD4send;
+
+    ::Ice::Object *upCast(::RoboCompDSRD4::DSRD4send *);
+
+    typedef ::IceInternal::Handle<::RoboCompDSRD4::DSRD4send> DSRD4sendPtr;
+    typedef ::IceInternal::ProxyHandle<::IceProxy::RoboCompDSRD4::DSRD4send> DSRD4sendPrx;
+    typedef DSRD4sendPrx DSRD4sendPrxPtr;
+
+    void _icePatchObjectPtr(DSRD4sendPtr &, const ::Ice::ObjectPtr &);
+
 }
 
-namespace RoboCompDSRD4
-{
+namespace RoboCompDSRD4 {
 
-class DSRD4;
-::Ice::Object* upCast(::RoboCompDSRD4::DSRD4*);
-typedef ::IceInternal::Handle< ::RoboCompDSRD4::DSRD4> DSRD4Ptr;
-typedef ::IceInternal::ProxyHandle< ::IceProxy::RoboCompDSRD4::DSRD4> DSRD4Prx;
-typedef DSRD4Prx DSRD4PrxPtr;
-void _icePatchObjectPtr(DSRD4Ptr&, const ::Ice::ObjectPtr&);
+    struct Pair {
+        ::std::string key;
+        ::std::string value;
 
-class DSRD4sync;
-::Ice::Object* upCast(::RoboCompDSRD4::DSRD4sync*);
-typedef ::IceInternal::Handle< ::RoboCompDSRD4::DSRD4sync> DSRD4syncPtr;
-typedef ::IceInternal::ProxyHandle< ::IceProxy::RoboCompDSRD4::DSRD4sync> DSRD4syncPrx;
-typedef DSRD4syncPrx DSRD4syncPrxPtr;
-void _icePatchObjectPtr(DSRD4syncPtr&, const ::Ice::ObjectPtr&);
-
-class DSRD4recv;
-::Ice::Object* upCast(::RoboCompDSRD4::DSRD4recv*);
-typedef ::IceInternal::Handle< ::RoboCompDSRD4::DSRD4recv> DSRD4recvPtr;
-typedef ::IceInternal::ProxyHandle< ::IceProxy::RoboCompDSRD4::DSRD4recv> DSRD4recvPrx;
-typedef DSRD4recvPrx DSRD4recvPrxPtr;
-void _icePatchObjectPtr(DSRD4recvPtr&, const ::Ice::ObjectPtr&);
-
-class DSRD4send;
-::Ice::Object* upCast(::RoboCompDSRD4::DSRD4send*);
-typedef ::IceInternal::Handle< ::RoboCompDSRD4::DSRD4send> DSRD4sendPtr;
-typedef ::IceInternal::ProxyHandle< ::IceProxy::RoboCompDSRD4::DSRD4send> DSRD4sendPrx;
-typedef DSRD4sendPrx DSRD4sendPrxPtr;
-void _icePatchObjectPtr(DSRD4sendPtr&, const ::Ice::ObjectPtr&);
-
-}
-
-namespace RoboCompDSRD4
-{
-
-struct Pair
-{
-    ::std::string key;
-    ::std::string value;
-
-    bool operator==(const Pair& rhs_) const
-    {
-        if(this == &rhs_)
-        {
-            return true;
-        }
-        if(key != rhs_.key)
-        {
-            return false;
-        }
-        if(value != rhs_.value)
-        {
-            return false;
-        }
-        return true;
-    }
-
-    bool operator<(const Pair& rhs_) const
-    {
-        if(this == &rhs_)
-        {
-            return false;
-        }
-        if(key < rhs_.key)
-        {
-            return true;
-        }
-        else if(rhs_.key < key)
-        {
-            return false;
-        }
-        if(value < rhs_.value)
-        {
-            return true;
-        }
-        else if(rhs_.value < value)
-        {
-            return false;
-        }
-        return false;
-    }
-
-    bool operator!=(const Pair& rhs_) const
-    {
-        return !operator==(rhs_);
-    }
-    bool operator<=(const Pair& rhs_) const
-    {
-        return operator<(rhs_) || operator==(rhs_);
-    }
-    bool operator>(const Pair& rhs_) const
-    {
-        return !operator<(rhs_) && !operator==(rhs_);
-    }
-    bool operator>=(const Pair& rhs_) const
-    {
-        return !operator<(rhs_);
-    }
-};
-
-typedef ::std::vector< ::RoboCompDSRD4::Pair> Attribs;
-
-struct NeighborsAttribs
-{
-    ::std::string uid;
-    ::RoboCompDSRD4::Attribs neighbors_attribs;
-    bool operator==(const NeighborsAttribs& rhs_) const
-    {
-        if(this == &rhs_)
-        {
-            return true;
-        }
-        if(uid != rhs_.uid)
-        {
-            return false;
-        }
-        if(neighbors_attribs.size() != rhs_.neighbors_attribs.size())
-        {
-            return false;
-        }
-        for (int i = 0;i < ((int) neighbors_attribs.size()); ++i) {
-            if (neighbors_attribs[i] != rhs_.neighbors_attribs[i]){}
+        bool operator==(const Pair &rhs_) const {
+            if (this == &rhs_) {
+                return true;
+            }
+            if (key != rhs_.key) {
                 return false;
-        }
-        return true;
-    }
-    friend std::ostream &operator<<( std::ostream &output, const NeighborsAttribs& na) {
-        output << na.uid;
-        return output;
-    };
-};
-
-typedef ::std::vector< ::RoboCompDSRD4::NeighborsAttribs> Neighbors;
-
-struct RoboCompValue
-{
-    ::Ice::Int value;
-
-    bool operator==(const RoboCompValue& rhs_) const
-    {
-        if(this == &rhs_)
-        {
+            }
+            if (value != rhs_.value) {
+                return false;
+            }
             return true;
         }
-        if(value != rhs_.value)
-        {
-            return false;
-        }
-        return true;
-    }
 
-    bool operator<(const RoboCompValue& rhs_) const
-    {
-        if(this == &rhs_)
-        {
+        bool operator<(const Pair &rhs_) const {
+            if (this == &rhs_) {
+                return false;
+            }
+            if (key < rhs_.key) {
+                return true;
+            } else if (rhs_.key < key) {
+                return false;
+            }
+            if (value < rhs_.value) {
+                return true;
+            } else if (rhs_.value < value) {
+                return false;
+            }
             return false;
         }
-        if(value < rhs_.value)
-        {
-            return true;
-        }
-        else if(rhs_.value < value)
-        {
-            return false;
-        }
-        return false;
-    }
 
-    bool operator!=(const RoboCompValue& rhs_) const
-    {
-        return !operator==(rhs_);
-    }
-    bool operator<=(const RoboCompValue& rhs_) const
-    {
-        return operator<(rhs_) || operator==(rhs_);
-    }
-    bool operator>(const RoboCompValue& rhs_) const
-    {
-        return !operator<(rhs_) && !operator==(rhs_);
-    }
-    bool operator>=(const RoboCompValue& rhs_) const
-    {
-        return !operator<(rhs_);
-    }
-    friend std::ostream &operator<<( std::ostream &output, const RoboCompValue& rv) {
-        output << rv.value;
-        return output;
-    };
-};
+        bool operator!=(const Pair &rhs_) const {
+            return !operator==(rhs_);
+        }
 
-struct CRDTData
-{
-    ::std::string uid;
-    ::Ice::Int cc;
-    ::Ice::Int dc;
+        bool operator<=(const Pair &rhs_) const {
+            return operator<(rhs_) || operator==(rhs_);
+        }
 
-    bool operator==(const CRDTData& rhs_) const
-    {
-        if(this == &rhs_)
-        {
-            return true;
+        bool operator>(const Pair &rhs_) const {
+            return !operator<(rhs_) && !operator==(rhs_);
         }
-        if(uid != rhs_.uid)
-        {
-            return false;
-        }
-        if(cc != rhs_.cc)
-        {
-            return false;
-        }
-        if(dc != rhs_.dc)
-        {
-            return false;
-        }
-        return true;
-    }
 
-    bool operator<(const CRDTData& rhs_) const
-    {
-        if(this == &rhs_)
-        {
-            return false;
+        bool operator>=(const Pair &rhs_) const {
+            return !operator<(rhs_);
         }
-        if(uid < rhs_.uid)
-        {
-            return true;
-        }
-        else if(rhs_.uid < uid)
-        {
-            return false;
-        }
-        if(cc < rhs_.cc)
-        {
-            return true;
-        }
-        else if(rhs_.cc < cc)
-        {
-            return false;
-        }
-        if(dc < rhs_.dc)
-        {
-            return true;
-        }
-        else if(rhs_.dc < dc)
-        {
-            return false;
-        }
-        return false;
-    }
-
-    bool operator!=(const CRDTData& rhs_) const
-    {
-        return !operator==(rhs_);
-    }
-    bool operator<=(const CRDTData& rhs_) const
-    {
-        return operator<(rhs_) || operator==(rhs_);
-    }
-    bool operator>(const CRDTData& rhs_) const
-    {
-        return !operator<(rhs_) && !operator==(rhs_);
-    }
-    bool operator>=(const CRDTData& rhs_) const
-    {
-        return !operator<(rhs_);
-    }
-    friend std::ostream &operator<<( std::ostream &output, const CRDTData& crdtdata) {
-//         output <<" UID:"<<crdtdata.uid<<" CC:"<<crdtdata.cc<<" DC:"<<crdtdata.dc;
-        output <<" UID:"<<crdtdata.uid;
-        return output;
-    };
-};
-
-struct DS
-{
-    ::std::string id;
-    ::RoboCompDSRD4::RoboCompValue rcvalue;
-    ::RoboCompDSRD4::Neighbors neighbors;
-    ::RoboCompDSRD4::CRDTData crdt_data;
-    bool operator==(const DS &ds) const {
-        return (ds.id == id && ds.rcvalue == rcvalue && ds.neighbors == neighbors && ds.crdt_data == crdt_data);
-    };
-    bool operator>(const DS &ds) const {
-        return ds.crdt_data.uid < crdt_data.uid;
-    }
-    bool operator<(const DS &ds) const {
-        return ds.crdt_data.uid > crdt_data.uid;
     };
 
-    friend std::ostream &operator<<( std::ostream &output, const DS& ds) {
-        output <<"[Owner:"<<ds.id<<", "<<ds.rcvalue <<", "<<ds.crdt_data<<"]";
-        return output;
+    typedef ::std::vector<::RoboCompDSRD4::Pair> Attribs;
+
+    struct NeighborsAttribs {
+        ::std::string uid;
+        ::RoboCompDSRD4::Attribs neighbors_attribs;
+
+        bool operator==(const NeighborsAttribs &rhs_) const {
+            if (this == &rhs_) {
+                return true;
+            }
+            if (uid != rhs_.uid) {
+                return false;
+            }
+            if (neighbors_attribs.size() != rhs_.neighbors_attribs.size()) {
+                return false;
+            }
+            for (int i = 0; i < ((int) neighbors_attribs.size()); ++i) {
+                if (neighbors_attribs[i] != rhs_.neighbors_attribs[i]) {}
+                return false;
+            }
+            return true;
+        }
+
+        friend std::ostream &operator<<(std::ostream &output, const NeighborsAttribs &na) {
+            output << na.uid;
+            return output;
+        };
     };
-};
 
-typedef ::std::vector< ::RoboCompDSRD4::DS> Delta;
-
-}
-
-namespace RoboCompDSRD4
-{
-
-class Callback_DSRD4_sendData_Base : public virtual ::IceInternal::CallbackBase { };
-typedef ::IceUtil::Handle< Callback_DSRD4_sendData_Base> Callback_DSRD4_sendDataPtr;
-
-class Callback_DSRD4_sendPortDSRD4_Base : public virtual ::IceInternal::CallbackBase { };
-typedef ::IceUtil::Handle< Callback_DSRD4_sendPortDSRD4_Base> Callback_DSRD4_sendPortDSRD4Ptr;
-
-class Callback_DSRD4sync_sendSync_Base : public virtual ::IceInternal::CallbackBase { };
-typedef ::IceUtil::Handle< Callback_DSRD4sync_sendSync_Base> Callback_DSRD4sync_sendSyncPtr;
-
-class Callback_DSRD4recv_finish_Base : public virtual ::IceInternal::CallbackBase { };
-typedef ::IceUtil::Handle< Callback_DSRD4recv_finish_Base> Callback_DSRD4recv_finishPtr;
-
-class Callback_DSRD4send_getData_Base : public virtual ::IceInternal::CallbackBase { };
-typedef ::IceUtil::Handle< Callback_DSRD4send_getData_Base> Callback_DSRD4send_getDataPtr;
-
-}
-
-namespace IceProxy
-{
-
-namespace RoboCompDSRD4
-{
-
-class DSRD4 : public virtual ::Ice::Proxy<DSRD4, ::IceProxy::Ice::Object>
-{
-public:
-
-    void sendData(const ::RoboCompDSRD4::Delta& iceP_d, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        end_sendData(_iceI_begin_sendData(iceP_d, context, ::IceInternal::dummyCallback, 0, true));
-    }
-
-    ::Ice::AsyncResultPtr begin_sendData(const ::RoboCompDSRD4::Delta& iceP_d, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        return _iceI_begin_sendData(iceP_d, context, ::IceInternal::dummyCallback, 0);
-    }
-
-    ::Ice::AsyncResultPtr begin_sendData(const ::RoboCompDSRD4::Delta& iceP_d, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_sendData(iceP_d, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_sendData(const ::RoboCompDSRD4::Delta& iceP_d, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_sendData(iceP_d, context, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_sendData(const ::RoboCompDSRD4::Delta& iceP_d, const ::RoboCompDSRD4::Callback_DSRD4_sendDataPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_sendData(iceP_d, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_sendData(const ::RoboCompDSRD4::Delta& iceP_d, const ::Ice::Context& context, const ::RoboCompDSRD4::Callback_DSRD4_sendDataPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_sendData(iceP_d, context, del, cookie);
-    }
-
-    void end_sendData(const ::Ice::AsyncResultPtr&);
-
-private:
-
-    ::Ice::AsyncResultPtr _iceI_begin_sendData(const ::RoboCompDSRD4::Delta&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
-
-public:
-
-    void sendPortDSRD4(const ::std::string& iceP_port, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        end_sendPortDSRD4(_iceI_begin_sendPortDSRD4(iceP_port, context, ::IceInternal::dummyCallback, 0, true));
-    }
-
-    ::Ice::AsyncResultPtr begin_sendPortDSRD4(const ::std::string& iceP_port, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        return _iceI_begin_sendPortDSRD4(iceP_port, context, ::IceInternal::dummyCallback, 0);
-    }
-
-    ::Ice::AsyncResultPtr begin_sendPortDSRD4(const ::std::string& iceP_port, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_sendPortDSRD4(iceP_port, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_sendPortDSRD4(const ::std::string& iceP_port, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_sendPortDSRD4(iceP_port, context, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_sendPortDSRD4(const ::std::string& iceP_port, const ::RoboCompDSRD4::Callback_DSRD4_sendPortDSRD4Ptr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_sendPortDSRD4(iceP_port, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_sendPortDSRD4(const ::std::string& iceP_port, const ::Ice::Context& context, const ::RoboCompDSRD4::Callback_DSRD4_sendPortDSRD4Ptr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_sendPortDSRD4(iceP_port, context, del, cookie);
-    }
-
-    void end_sendPortDSRD4(const ::Ice::AsyncResultPtr&);
-
-private:
-
-    ::Ice::AsyncResultPtr _iceI_begin_sendPortDSRD4(const ::std::string&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
-
-public:
-
-    static const ::std::string& ice_staticId();
-
-protected:
-
-    virtual ::IceProxy::Ice::Object* _newInstance() const;
-};
-
-class DSRD4sync : public virtual ::Ice::Proxy<DSRD4sync, ::IceProxy::Ice::Object>
-{
-public:
-
-    bool sendSync(const ::std::string& iceP_name, const ::RoboCompDSRD4::Delta& iceP_d, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        return end_sendSync(_iceI_begin_sendSync(iceP_name, iceP_d, context, ::IceInternal::dummyCallback, 0, true));
-    }
-
-    ::Ice::AsyncResultPtr begin_sendSync(const ::std::string& iceP_name, const ::RoboCompDSRD4::Delta& iceP_d, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        return _iceI_begin_sendSync(iceP_name, iceP_d, context, ::IceInternal::dummyCallback, 0);
-    }
-
-    ::Ice::AsyncResultPtr begin_sendSync(const ::std::string& iceP_name, const ::RoboCompDSRD4::Delta& iceP_d, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_sendSync(iceP_name, iceP_d, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_sendSync(const ::std::string& iceP_name, const ::RoboCompDSRD4::Delta& iceP_d, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_sendSync(iceP_name, iceP_d, context, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_sendSync(const ::std::string& iceP_name, const ::RoboCompDSRD4::Delta& iceP_d, const ::RoboCompDSRD4::Callback_DSRD4sync_sendSyncPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_sendSync(iceP_name, iceP_d, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_sendSync(const ::std::string& iceP_name, const ::RoboCompDSRD4::Delta& iceP_d, const ::Ice::Context& context, const ::RoboCompDSRD4::Callback_DSRD4sync_sendSyncPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_sendSync(iceP_name, iceP_d, context, del, cookie);
-    }
-
-    bool end_sendSync(const ::Ice::AsyncResultPtr&);
-
-private:
-
-    ::Ice::AsyncResultPtr _iceI_begin_sendSync(const ::std::string&, const ::RoboCompDSRD4::Delta&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
-
-public:
-
-    static const ::std::string& ice_staticId();
-
-protected:
-
-    virtual ::IceProxy::Ice::Object* _newInstance() const;
-};
-
-class DSRD4recv : public virtual ::Ice::Proxy<DSRD4recv, ::IceProxy::Ice::Object>
-{
-public:
-
-    void finish(const ::std::string& iceP_name, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        end_finish(_iceI_begin_finish(iceP_name, context, ::IceInternal::dummyCallback, 0, true));
-    }
-
-    ::Ice::AsyncResultPtr begin_finish(const ::std::string& iceP_name, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        return _iceI_begin_finish(iceP_name, context, ::IceInternal::dummyCallback, 0);
-    }
-
-    ::Ice::AsyncResultPtr begin_finish(const ::std::string& iceP_name, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_finish(iceP_name, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_finish(const ::std::string& iceP_name, const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_finish(iceP_name, context, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_finish(const ::std::string& iceP_name, const ::RoboCompDSRD4::Callback_DSRD4recv_finishPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_finish(iceP_name, ::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_finish(const ::std::string& iceP_name, const ::Ice::Context& context, const ::RoboCompDSRD4::Callback_DSRD4recv_finishPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_finish(iceP_name, context, del, cookie);
-    }
-
-    void end_finish(const ::Ice::AsyncResultPtr&);
-
-private:
-
-    ::Ice::AsyncResultPtr _iceI_begin_finish(const ::std::string&, const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
-
-public:
-
-    static const ::std::string& ice_staticId();
-
-protected:
-
-    virtual ::IceProxy::Ice::Object* _newInstance() const;
-};
-
-class DSRD4send : public virtual ::Ice::Proxy<DSRD4send, ::IceProxy::Ice::Object>
-{
-public:
-
-    void getData(::RoboCompDSRD4::Delta& iceP_d, const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        end_getData(iceP_d, _iceI_begin_getData(context, ::IceInternal::dummyCallback, 0, true));
-    }
-
-    ::Ice::AsyncResultPtr begin_getData(const ::Ice::Context& context = ::Ice::noExplicitContext)
-    {
-        return _iceI_begin_getData(context, ::IceInternal::dummyCallback, 0);
-    }
-
-    ::Ice::AsyncResultPtr begin_getData(const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_getData(::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_getData(const ::Ice::Context& context, const ::Ice::CallbackPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_getData(context, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_getData(const ::RoboCompDSRD4::Callback_DSRD4send_getDataPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_getData(::Ice::noExplicitContext, del, cookie);
-    }
-
-    ::Ice::AsyncResultPtr begin_getData(const ::Ice::Context& context, const ::RoboCompDSRD4::Callback_DSRD4send_getDataPtr& del, const ::Ice::LocalObjectPtr& cookie = 0)
-    {
-        return _iceI_begin_getData(context, del, cookie);
-    }
-
-    void end_getData(::RoboCompDSRD4::Delta& iceP_d, const ::Ice::AsyncResultPtr&);
-
-private:
-
-    ::Ice::AsyncResultPtr _iceI_begin_getData(const ::Ice::Context&, const ::IceInternal::CallbackBasePtr&, const ::Ice::LocalObjectPtr& cookie = 0, bool sync = false);
-
-public:
-
-    static const ::std::string& ice_staticId();
-
-protected:
-
-    virtual ::IceProxy::Ice::Object* _newInstance() const;
-};
-
-}
-
-}
-
-namespace RoboCompDSRD4
-{
-
-class DSRD4 : public virtual ::Ice::Object
-{
-public:
-
-    typedef DSRD4Prx ProxyType;
-    typedef DSRD4Ptr PointerType;
-
-    virtual ~DSRD4();
-
-    virtual bool ice_isA(const ::std::string&, const ::Ice::Current& = ::Ice::emptyCurrent) const;
-    virtual ::std::vector< ::std::string> ice_ids(const ::Ice::Current& = ::Ice::emptyCurrent) const;
-    virtual const ::std::string& ice_id(const ::Ice::Current& = ::Ice::emptyCurrent) const;
-
-    static const ::std::string& ice_staticId();
-
-    virtual void sendData(const ::RoboCompDSRD4::Delta&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
-    bool _iceD_sendData(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    virtual void sendPortDSRD4(const ::std::string&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
-    bool _iceD_sendPortDSRD4(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    virtual bool _iceDispatch(::IceInternal::Incoming&, const ::Ice::Current&);
-
-protected:
-
-    virtual void _iceWriteImpl(::Ice::OutputStream*) const;
-    virtual void _iceReadImpl(::Ice::InputStream*);
-};
-
-inline bool operator==(const DSRD4& lhs, const DSRD4& rhs)
-{
-    return static_cast<const ::Ice::Object&>(lhs) == static_cast<const ::Ice::Object&>(rhs);
-}
-
-inline bool operator<(const DSRD4& lhs, const DSRD4& rhs)
-{
-    return static_cast<const ::Ice::Object&>(lhs) < static_cast<const ::Ice::Object&>(rhs);
-}
-
-class DSRD4sync : public virtual ::Ice::Object
-{
-public:
-
-    typedef DSRD4syncPrx ProxyType;
-    typedef DSRD4syncPtr PointerType;
-
-    virtual ~DSRD4sync();
-
-    virtual bool ice_isA(const ::std::string&, const ::Ice::Current& = ::Ice::emptyCurrent) const;
-    virtual ::std::vector< ::std::string> ice_ids(const ::Ice::Current& = ::Ice::emptyCurrent) const;
-    virtual const ::std::string& ice_id(const ::Ice::Current& = ::Ice::emptyCurrent) const;
-
-    static const ::std::string& ice_staticId();
-
-    virtual bool sendSync(const ::std::string&, const ::RoboCompDSRD4::Delta&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
-    bool _iceD_sendSync(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    virtual bool _iceDispatch(::IceInternal::Incoming&, const ::Ice::Current&);
-
-protected:
-
-    virtual void _iceWriteImpl(::Ice::OutputStream*) const;
-    virtual void _iceReadImpl(::Ice::InputStream*);
-};
-
-inline bool operator==(const DSRD4sync& lhs, const DSRD4sync& rhs)
-{
-    return static_cast<const ::Ice::Object&>(lhs) == static_cast<const ::Ice::Object&>(rhs);
-}
-
-inline bool operator<(const DSRD4sync& lhs, const DSRD4sync& rhs)
-{
-    return static_cast<const ::Ice::Object&>(lhs) < static_cast<const ::Ice::Object&>(rhs);
-}
-
-class DSRD4recv : public virtual ::Ice::Object
-{
-public:
-
-    typedef DSRD4recvPrx ProxyType;
-    typedef DSRD4recvPtr PointerType;
-
-    virtual ~DSRD4recv();
-
-    virtual bool ice_isA(const ::std::string&, const ::Ice::Current& = ::Ice::emptyCurrent) const;
-    virtual ::std::vector< ::std::string> ice_ids(const ::Ice::Current& = ::Ice::emptyCurrent) const;
-    virtual const ::std::string& ice_id(const ::Ice::Current& = ::Ice::emptyCurrent) const;
-
-    static const ::std::string& ice_staticId();
-
-    virtual void finish(const ::std::string&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
-    bool _iceD_finish(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    virtual bool _iceDispatch(::IceInternal::Incoming&, const ::Ice::Current&);
-
-protected:
-
-    virtual void _iceWriteImpl(::Ice::OutputStream*) const;
-    virtual void _iceReadImpl(::Ice::InputStream*);
-};
-
-inline bool operator==(const DSRD4recv& lhs, const DSRD4recv& rhs)
-{
-    return static_cast<const ::Ice::Object&>(lhs) == static_cast<const ::Ice::Object&>(rhs);
-}
-
-inline bool operator<(const DSRD4recv& lhs, const DSRD4recv& rhs)
-{
-    return static_cast<const ::Ice::Object&>(lhs) < static_cast<const ::Ice::Object&>(rhs);
-}
-
-class DSRD4send : public virtual ::Ice::Object
-{
-public:
-
-    typedef DSRD4sendPrx ProxyType;
-    typedef DSRD4sendPtr PointerType;
-
-    virtual ~DSRD4send();
-
-    virtual bool ice_isA(const ::std::string&, const ::Ice::Current& = ::Ice::emptyCurrent) const;
-    virtual ::std::vector< ::std::string> ice_ids(const ::Ice::Current& = ::Ice::emptyCurrent) const;
-    virtual const ::std::string& ice_id(const ::Ice::Current& = ::Ice::emptyCurrent) const;
-
-    static const ::std::string& ice_staticId();
-
-    virtual void getData(::RoboCompDSRD4::Delta&, const ::Ice::Current& = ::Ice::emptyCurrent) = 0;
-    bool _iceD_getData(::IceInternal::Incoming&, const ::Ice::Current&);
-
-    virtual bool _iceDispatch(::IceInternal::Incoming&, const ::Ice::Current&);
-
-protected:
-
-    virtual void _iceWriteImpl(::Ice::OutputStream*) const;
-    virtual void _iceReadImpl(::Ice::InputStream*);
-};
-
-inline bool operator==(const DSRD4send& lhs, const DSRD4send& rhs)
-{
-    return static_cast<const ::Ice::Object&>(lhs) == static_cast<const ::Ice::Object&>(rhs);
-}
-
-inline bool operator<(const DSRD4send& lhs, const DSRD4send& rhs)
-{
-    return static_cast<const ::Ice::Object&>(lhs) < static_cast<const ::Ice::Object&>(rhs);
-}
-
-}
-
-namespace Ice
-{
-
-template<>
-struct StreamableTraits< ::RoboCompDSRD4::Pair>
-{
-    static const StreamHelperCategory helper = StreamHelperCategoryStruct;
-    static const int minWireSize = 2;
-    static const bool fixedLength = false;
-};
-
-template<typename S>
-struct StreamWriter< ::RoboCompDSRD4::Pair, S>
-{
-    static void write(S* ostr, const ::RoboCompDSRD4::Pair& v)
-    {
-        ostr->write(v.key);
-        ostr->write(v.value);
-    }
-};
-
-template<typename S>
-struct StreamReader< ::RoboCompDSRD4::Pair, S>
-{
-    static void read(S* istr, ::RoboCompDSRD4::Pair& v)
-    {
-        istr->read(v.key);
-        istr->read(v.value);
-    }
-};
-
-template<>
-struct StreamableTraits< ::RoboCompDSRD4::NeighborsAttribs>
-{
-    static const StreamHelperCategory helper = StreamHelperCategoryStruct;
-    static const int minWireSize = 2;
-    static const bool fixedLength = false;
-};
-
-template<typename S>
-struct StreamWriter< ::RoboCompDSRD4::NeighborsAttribs, S>
-{
-    static void write(S* ostr, const ::RoboCompDSRD4::NeighborsAttribs& v)
-    {
-        ostr->write(v.uid);
-        ostr->write(v.neighbors_attribs);
-    }
-};
-
-template<typename S>
-struct StreamReader< ::RoboCompDSRD4::NeighborsAttribs, S>
-{
-    static void read(S* istr, ::RoboCompDSRD4::NeighborsAttribs& v)
-    {
-        istr->read(v.uid);
-        istr->read(v.neighbors_attribs);
-    }
-};
-
-template<>
-struct StreamableTraits< ::RoboCompDSRD4::RoboCompValue>
-{
-    static const StreamHelperCategory helper = StreamHelperCategoryStruct;
-    static const int minWireSize = 4;
-    static const bool fixedLength = true;
-};
-
-template<typename S>
-struct StreamWriter< ::RoboCompDSRD4::RoboCompValue, S>
-{
-    static void write(S* ostr, const ::RoboCompDSRD4::RoboCompValue& v)
-    {
-        ostr->write(v.value);
-    }
-};
-
-template<typename S>
-struct StreamReader< ::RoboCompDSRD4::RoboCompValue, S>
-{
-    static void read(S* istr, ::RoboCompDSRD4::RoboCompValue& v)
-    {
-        istr->read(v.value);
-    }
-};
-
-template<>
-struct StreamableTraits< ::RoboCompDSRD4::CRDTData>
-{
-    static const StreamHelperCategory helper = StreamHelperCategoryStruct;
-    static const int minWireSize = 9;
-    static const bool fixedLength = false;
-};
-
-template<typename S>
-struct StreamWriter< ::RoboCompDSRD4::CRDTData, S>
-{
-    static void write(S* ostr, const ::RoboCompDSRD4::CRDTData& v)
-    {
-        ostr->write(v.uid);
-        ostr->write(v.cc);
-        ostr->write(v.dc);
-    }
-};
-
-template<typename S>
-struct StreamReader< ::RoboCompDSRD4::CRDTData, S>
-{
-    static void read(S* istr, ::RoboCompDSRD4::CRDTData& v)
-    {
-        istr->read(v.uid);
-        istr->read(v.cc);
-        istr->read(v.dc);
-    }
-};
-
-template<>
-struct StreamableTraits< ::RoboCompDSRD4::DS>
-{
-    static const StreamHelperCategory helper = StreamHelperCategoryStruct;
-    static const int minWireSize = 15;
-    static const bool fixedLength = false;
-};
-
-template<typename S>
-struct StreamWriter< ::RoboCompDSRD4::DS, S>
-{
-    static void write(S* ostr, const ::RoboCompDSRD4::DS& v)
-    {
-        ostr->write(v.id);
-        ostr->write(v.rcvalue);
-        ostr->write(v.neighbors);
-        ostr->write(v.crdt_data);
-    }
-};
-
-template<typename S>
-struct StreamReader< ::RoboCompDSRD4::DS, S>
-{
-    static void read(S* istr, ::RoboCompDSRD4::DS& v)
-    {
-        istr->read(v.id);
-        istr->read(v.rcvalue);
-        istr->read(v.neighbors);
-        istr->read(v.crdt_data);
-    }
-};
-
-}
-
-namespace RoboCompDSRD4
-{
-
-template<class T>
-class CallbackNC_DSRD4_sendData : public Callback_DSRD4_sendData_Base, public ::IceInternal::OnewayCallbackNC<T>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception&);
-    typedef void (T::*Sent)(bool);
-    typedef void (T::*Response)();
-
-    CallbackNC_DSRD4_sendData(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::OnewayCallbackNC<T>(obj, cb, excb, sentcb)
-    {
-    }
-};
-
-template<class T> Callback_DSRD4_sendDataPtr
-newCallback_DSRD4_sendData(const IceUtil::Handle<T>& instance, void (T::*cb)(), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_DSRD4_sendData<T>(instance, cb, excb, sentcb);
-}
-
-template<class T> Callback_DSRD4_sendDataPtr
-newCallback_DSRD4_sendData(const IceUtil::Handle<T>& instance, void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_DSRD4_sendData<T>(instance, 0, excb, sentcb);
-}
-
-template<class T> Callback_DSRD4_sendDataPtr
-newCallback_DSRD4_sendData(T* instance, void (T::*cb)(), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_DSRD4_sendData<T>(instance, cb, excb, sentcb);
-}
-
-template<class T> Callback_DSRD4_sendDataPtr
-newCallback_DSRD4_sendData(T* instance, void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_DSRD4_sendData<T>(instance, 0, excb, sentcb);
-}
-
-template<class T, typename CT>
-class Callback_DSRD4_sendData : public Callback_DSRD4_sendData_Base, public ::IceInternal::OnewayCallback<T, CT>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
-    typedef void (T::*Sent)(bool , const CT&);
-    typedef void (T::*Response)(const CT&);
-
-    Callback_DSRD4_sendData(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::OnewayCallback<T, CT>(obj, cb, excb, sentcb)
-    {
-    }
-};
-
-template<class T, typename CT> Callback_DSRD4_sendDataPtr
-newCallback_DSRD4_sendData(const IceUtil::Handle<T>& instance, void (T::*cb)(const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_DSRD4_sendData<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT> Callback_DSRD4_sendDataPtr
-newCallback_DSRD4_sendData(const IceUtil::Handle<T>& instance, void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_DSRD4_sendData<T, CT>(instance, 0, excb, sentcb);
-}
-
-template<class T, typename CT> Callback_DSRD4_sendDataPtr
-newCallback_DSRD4_sendData(T* instance, void (T::*cb)(const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_DSRD4_sendData<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT> Callback_DSRD4_sendDataPtr
-newCallback_DSRD4_sendData(T* instance, void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_DSRD4_sendData<T, CT>(instance, 0, excb, sentcb);
-}
-
-template<class T>
-class CallbackNC_DSRD4_sendPortDSRD4 : public Callback_DSRD4_sendPortDSRD4_Base, public ::IceInternal::OnewayCallbackNC<T>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception&);
-    typedef void (T::*Sent)(bool);
-    typedef void (T::*Response)();
-
-    CallbackNC_DSRD4_sendPortDSRD4(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::OnewayCallbackNC<T>(obj, cb, excb, sentcb)
-    {
-    }
-};
-
-template<class T> Callback_DSRD4_sendPortDSRD4Ptr
-newCallback_DSRD4_sendPortDSRD4(const IceUtil::Handle<T>& instance, void (T::*cb)(), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_DSRD4_sendPortDSRD4<T>(instance, cb, excb, sentcb);
-}
-
-template<class T> Callback_DSRD4_sendPortDSRD4Ptr
-newCallback_DSRD4_sendPortDSRD4(const IceUtil::Handle<T>& instance, void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_DSRD4_sendPortDSRD4<T>(instance, 0, excb, sentcb);
-}
-
-template<class T> Callback_DSRD4_sendPortDSRD4Ptr
-newCallback_DSRD4_sendPortDSRD4(T* instance, void (T::*cb)(), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_DSRD4_sendPortDSRD4<T>(instance, cb, excb, sentcb);
-}
-
-template<class T> Callback_DSRD4_sendPortDSRD4Ptr
-newCallback_DSRD4_sendPortDSRD4(T* instance, void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_DSRD4_sendPortDSRD4<T>(instance, 0, excb, sentcb);
-}
-
-template<class T, typename CT>
-class Callback_DSRD4_sendPortDSRD4 : public Callback_DSRD4_sendPortDSRD4_Base, public ::IceInternal::OnewayCallback<T, CT>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
-    typedef void (T::*Sent)(bool , const CT&);
-    typedef void (T::*Response)(const CT&);
-
-    Callback_DSRD4_sendPortDSRD4(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::OnewayCallback<T, CT>(obj, cb, excb, sentcb)
-    {
-    }
-};
-
-template<class T, typename CT> Callback_DSRD4_sendPortDSRD4Ptr
-newCallback_DSRD4_sendPortDSRD4(const IceUtil::Handle<T>& instance, void (T::*cb)(const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_DSRD4_sendPortDSRD4<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT> Callback_DSRD4_sendPortDSRD4Ptr
-newCallback_DSRD4_sendPortDSRD4(const IceUtil::Handle<T>& instance, void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_DSRD4_sendPortDSRD4<T, CT>(instance, 0, excb, sentcb);
-}
-
-template<class T, typename CT> Callback_DSRD4_sendPortDSRD4Ptr
-newCallback_DSRD4_sendPortDSRD4(T* instance, void (T::*cb)(const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_DSRD4_sendPortDSRD4<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT> Callback_DSRD4_sendPortDSRD4Ptr
-newCallback_DSRD4_sendPortDSRD4(T* instance, void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_DSRD4_sendPortDSRD4<T, CT>(instance, 0, excb, sentcb);
-}
-
-template<class T>
-class CallbackNC_DSRD4sync_sendSync : public Callback_DSRD4sync_sendSync_Base, public ::IceInternal::TwowayCallbackNC<T>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception&);
-    typedef void (T::*Sent)(bool);
-    typedef void (T::*Response)(bool);
-
-    CallbackNC_DSRD4sync_sendSync(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallbackNC<T>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
-    }
-
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::RoboCompDSRD4::DSRD4syncPrx proxy = ::RoboCompDSRD4::DSRD4syncPrx::uncheckedCast(result->getProxy());
-        bool ret;
-        try
-        {
-            ret = proxy->end_sendSync(result);
+    typedef ::std::vector<::RoboCompDSRD4::NeighborsAttribs> Neighbors;
+
+    struct RoboCompValue {
+        ::Ice::Int value;
+
+        bool operator==(const RoboCompValue &rhs_) const {
+            if (this == &rhs_) {
+                return true;
+            }
+            if (value != rhs_.value) {
+                return false;
+            }
+            return true;
         }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::CallbackNC<T>::exception(result, ex);
-            return;
+
+        bool operator<(const RoboCompValue &rhs_) const {
+            if (this == &rhs_) {
+                return false;
+            }
+            if (value < rhs_.value) {
+                return true;
+            } else if (rhs_.value < value) {
+                return false;
+            }
+            return false;
         }
-        if(_response)
-        {
-            (::IceInternal::CallbackNC<T>::_callback.get()->*_response)(ret);
+
+        bool operator!=(const RoboCompValue &rhs_) const {
+            return !operator==(rhs_);
         }
+
+        bool operator<=(const RoboCompValue &rhs_) const {
+            return operator<(rhs_) || operator==(rhs_);
+        }
+
+        bool operator>(const RoboCompValue &rhs_) const {
+            return !operator<(rhs_) && !operator==(rhs_);
+        }
+
+        bool operator>=(const RoboCompValue &rhs_) const {
+            return !operator<(rhs_);
+        }
+
+        friend std::ostream &operator<<(std::ostream &output, const RoboCompValue &rv) {
+            output << rv.value;
+            return output;
+        };
+    };
+
+    struct CRDTData {
+        ::std::string uid;
+        ::Ice::Int cc;
+        ::Ice::Int dc;
+
+        bool operator==(const CRDTData &rhs_) const {
+            if (this == &rhs_) {
+                return true;
+            }
+            if (uid != rhs_.uid) {
+                return false;
+            }
+            if (cc != rhs_.cc) {
+                return false;
+            }
+            if (dc != rhs_.dc) {
+                return false;
+            }
+            return true;
+        }
+
+        bool operator<(const CRDTData &rhs_) const {
+            if (this == &rhs_) {
+                return false;
+            }
+            if (uid < rhs_.uid) {
+                return true;
+            } else if (rhs_.uid < uid) {
+                return false;
+            }
+            if (cc < rhs_.cc) {
+                return true;
+            } else if (rhs_.cc < cc) {
+                return false;
+            }
+            if (dc < rhs_.dc) {
+                return true;
+            } else if (rhs_.dc < dc) {
+                return false;
+            }
+            return false;
+        }
+
+        bool operator!=(const CRDTData &rhs_) const {
+            return !operator==(rhs_);
+        }
+
+        bool operator<=(const CRDTData &rhs_) const {
+            return operator<(rhs_) || operator==(rhs_);
+        }
+
+        bool operator>(const CRDTData &rhs_) const {
+            return !operator<(rhs_) && !operator==(rhs_);
+        }
+
+        bool operator>=(const CRDTData &rhs_) const {
+            return !operator<(rhs_);
+        }
+
+        friend std::ostream &operator<<(std::ostream &output, const CRDTData &crdtdata) {
+         output <<" UID:"<<crdtdata.uid<<" CC:"<<crdtdata.cc<<" DC:"<<crdtdata.dc;
+//            output << " UID:" << crdtdata.uid;
+            return output;
+        };
+    };
+
+    struct DS {
+        ::std::string id;
+        ::RoboCompDSRD4::RoboCompValue rcvalue;
+        ::RoboCompDSRD4::Neighbors neighbors;
+        ::RoboCompDSRD4::CRDTData crdt_data;
+
+        bool operator==(const DS &ds) const {
+            return (ds.id == id && ds.rcvalue == rcvalue && ds.neighbors == neighbors && ds.crdt_data == crdt_data);
+        };
+
+        bool operator>(const DS &ds) const {
+            return ds.crdt_data.uid < crdt_data.uid;
+        }
+
+        bool operator<(const DS &ds) const {
+            return ds.crdt_data.uid > crdt_data.uid;
+        };
+
+        friend std::ostream &operator<<(std::ostream &output, const DS &ds) {
+            output << "[Owner:" << ds.id << ", " << ds.rcvalue << ", " << ds.crdt_data << "]";
+            return output;
+        };
+    };
+
+    typedef ::std::vector<::RoboCompDSRD4::DS> Delta;
+
+    typedef ::std::vector<::RoboCompDSRD4::CRDTData> DSContext;
+
+}
+
+namespace RoboCompDSRD4 {
+
+    class Callback_DSRD4_sendData_Base : public virtual ::IceInternal::CallbackBase {
+    };
+
+    typedef ::IceUtil::Handle<Callback_DSRD4_sendData_Base> Callback_DSRD4_sendDataPtr;
+
+    class Callback_DSRD4_sendPortDSRD4_Base : public virtual ::IceInternal::CallbackBase {
+    };
+
+    typedef ::IceUtil::Handle<Callback_DSRD4_sendPortDSRD4_Base> Callback_DSRD4_sendPortDSRD4Ptr;
+
+    class Callback_DSRD4sync_sendSync_Base : public virtual ::IceInternal::CallbackBase {
+    };
+
+    typedef ::IceUtil::Handle<Callback_DSRD4sync_sendSync_Base> Callback_DSRD4sync_sendSyncPtr;
+
+    class Callback_DSRD4recv_finish_Base : public virtual ::IceInternal::CallbackBase {
+    };
+
+    typedef ::IceUtil::Handle<Callback_DSRD4recv_finish_Base> Callback_DSRD4recv_finishPtr;
+
+    class Callback_DSRD4send_getData_Base : public virtual ::IceInternal::CallbackBase {
+    };
+
+    typedef ::IceUtil::Handle<Callback_DSRD4send_getData_Base> Callback_DSRD4send_getDataPtr;
+
+}
+
+namespace IceProxy {
+
+    namespace RoboCompDSRD4 {
+
+        class DSRD4 : public virtual ::Ice::Proxy<DSRD4, ::IceProxy::Ice::Object> {
+        public:
+
+            void
+            sendData(const ::RoboCompDSRD4::Delta &iceP_d, const ::Ice::Context &context = ::Ice::noExplicitContext) {
+                end_sendData(_iceI_begin_sendData(iceP_d, context, ::IceInternal::dummyCallback, 0, true));
+            }
+
+            ::Ice::AsyncResultPtr begin_sendData(const ::RoboCompDSRD4::Delta &iceP_d,
+                                                 const ::Ice::Context &context = ::Ice::noExplicitContext) {
+                return _iceI_begin_sendData(iceP_d, context, ::IceInternal::dummyCallback, 0);
+            }
+
+            ::Ice::AsyncResultPtr begin_sendData(const ::RoboCompDSRD4::Delta &iceP_d, const ::Ice::CallbackPtr &del,
+                                                 const ::Ice::LocalObjectPtr &cookie = 0) {
+                return _iceI_begin_sendData(iceP_d, ::Ice::noExplicitContext, del, cookie);
+            }
+
+            ::Ice::AsyncResultPtr begin_sendData(const ::RoboCompDSRD4::Delta &iceP_d, const ::Ice::Context &context,
+                                                 const ::Ice::CallbackPtr &del,
+                                                 const ::Ice::LocalObjectPtr &cookie = 0) {
+                return _iceI_begin_sendData(iceP_d, context, del, cookie);
+            }
+
+            ::Ice::AsyncResultPtr
+            begin_sendData(const ::RoboCompDSRD4::Delta &iceP_d, const ::RoboCompDSRD4::Callback_DSRD4_sendDataPtr &del,
+                           const ::Ice::LocalObjectPtr &cookie = 0) {
+                return _iceI_begin_sendData(iceP_d, ::Ice::noExplicitContext, del, cookie);
+            }
+
+            ::Ice::AsyncResultPtr begin_sendData(const ::RoboCompDSRD4::Delta &iceP_d, const ::Ice::Context &context,
+                                                 const ::RoboCompDSRD4::Callback_DSRD4_sendDataPtr &del,
+                                                 const ::Ice::LocalObjectPtr &cookie = 0) {
+                return _iceI_begin_sendData(iceP_d, context, del, cookie);
+            }
+
+            void end_sendData(const ::Ice::AsyncResultPtr &);
+
+        private:
+
+            ::Ice::AsyncResultPtr _iceI_begin_sendData(const ::RoboCompDSRD4::Delta &, const ::Ice::Context &,
+                                                       const ::IceInternal::CallbackBasePtr &,
+                                                       const ::Ice::LocalObjectPtr &cookie = 0, bool sync = false);
+
+        public:
+
+            void
+            sendPortDSRD4(const ::std::string &iceP_port, const ::Ice::Context &context = ::Ice::noExplicitContext) {
+                end_sendPortDSRD4(_iceI_begin_sendPortDSRD4(iceP_port, context, ::IceInternal::dummyCallback, 0, true));
+            }
+
+            ::Ice::AsyncResultPtr begin_sendPortDSRD4(const ::std::string &iceP_port,
+                                                      const ::Ice::Context &context = ::Ice::noExplicitContext) {
+                return _iceI_begin_sendPortDSRD4(iceP_port, context, ::IceInternal::dummyCallback, 0);
+            }
+
+            ::Ice::AsyncResultPtr begin_sendPortDSRD4(const ::std::string &iceP_port, const ::Ice::CallbackPtr &del,
+                                                      const ::Ice::LocalObjectPtr &cookie = 0) {
+                return _iceI_begin_sendPortDSRD4(iceP_port, ::Ice::noExplicitContext, del, cookie);
+            }
+
+            ::Ice::AsyncResultPtr begin_sendPortDSRD4(const ::std::string &iceP_port, const ::Ice::Context &context,
+                                                      const ::Ice::CallbackPtr &del,
+                                                      const ::Ice::LocalObjectPtr &cookie = 0) {
+                return _iceI_begin_sendPortDSRD4(iceP_port, context, del, cookie);
+            }
+
+            ::Ice::AsyncResultPtr begin_sendPortDSRD4(const ::std::string &iceP_port,
+                                                      const ::RoboCompDSRD4::Callback_DSRD4_sendPortDSRD4Ptr &del,
+                                                      const ::Ice::LocalObjectPtr &cookie = 0) {
+                return _iceI_begin_sendPortDSRD4(iceP_port, ::Ice::noExplicitContext, del, cookie);
+            }
+
+            ::Ice::AsyncResultPtr begin_sendPortDSRD4(const ::std::string &iceP_port, const ::Ice::Context &context,
+                                                      const ::RoboCompDSRD4::Callback_DSRD4_sendPortDSRD4Ptr &del,
+                                                      const ::Ice::LocalObjectPtr &cookie = 0) {
+                return _iceI_begin_sendPortDSRD4(iceP_port, context, del, cookie);
+            }
+
+            void end_sendPortDSRD4(const ::Ice::AsyncResultPtr &);
+
+        private:
+
+            ::Ice::AsyncResultPtr _iceI_begin_sendPortDSRD4(const ::std::string &, const ::Ice::Context &,
+                                                            const ::IceInternal::CallbackBasePtr &,
+                                                            const ::Ice::LocalObjectPtr &cookie = 0, bool sync = false);
+
+        public:
+
+            static const ::std::string &ice_staticId();
+
+        protected:
+
+            virtual ::IceProxy::Ice::Object *_newInstance() const;
+        };
+
+        class DSRD4sync : public virtual ::Ice::Proxy<DSRD4sync, ::IceProxy::Ice::Object> {
+        public:
+
+            bool sendSync(const ::std::string &iceP_name, const ::RoboCompDSRD4::Delta &iceP_d,
+                          const ::Ice::Context &context = ::Ice::noExplicitContext) {
+                return end_sendSync(
+                        _iceI_begin_sendSync(iceP_name, iceP_d, context, ::IceInternal::dummyCallback, 0, true));
+            }
+
+            ::Ice::AsyncResultPtr begin_sendSync(const ::std::string &iceP_name, const ::RoboCompDSRD4::Delta &iceP_d,
+                                                 const ::Ice::Context &context = ::Ice::noExplicitContext) {
+                return _iceI_begin_sendSync(iceP_name, iceP_d, context, ::IceInternal::dummyCallback, 0);
+            }
+
+            ::Ice::AsyncResultPtr begin_sendSync(const ::std::string &iceP_name, const ::RoboCompDSRD4::Delta &iceP_d,
+                                                 const ::Ice::CallbackPtr &del,
+                                                 const ::Ice::LocalObjectPtr &cookie = 0) {
+                return _iceI_begin_sendSync(iceP_name, iceP_d, ::Ice::noExplicitContext, del, cookie);
+            }
+
+            ::Ice::AsyncResultPtr begin_sendSync(const ::std::string &iceP_name, const ::RoboCompDSRD4::Delta &iceP_d,
+                                                 const ::Ice::Context &context, const ::Ice::CallbackPtr &del,
+                                                 const ::Ice::LocalObjectPtr &cookie = 0) {
+                return _iceI_begin_sendSync(iceP_name, iceP_d, context, del, cookie);
+            }
+
+            ::Ice::AsyncResultPtr begin_sendSync(const ::std::string &iceP_name, const ::RoboCompDSRD4::Delta &iceP_d,
+                                                 const ::RoboCompDSRD4::Callback_DSRD4sync_sendSyncPtr &del,
+                                                 const ::Ice::LocalObjectPtr &cookie = 0) {
+                return _iceI_begin_sendSync(iceP_name, iceP_d, ::Ice::noExplicitContext, del, cookie);
+            }
+
+            ::Ice::AsyncResultPtr begin_sendSync(const ::std::string &iceP_name, const ::RoboCompDSRD4::Delta &iceP_d,
+                                                 const ::Ice::Context &context,
+                                                 const ::RoboCompDSRD4::Callback_DSRD4sync_sendSyncPtr &del,
+                                                 const ::Ice::LocalObjectPtr &cookie = 0) {
+                return _iceI_begin_sendSync(iceP_name, iceP_d, context, del, cookie);
+            }
+
+            bool end_sendSync(const ::Ice::AsyncResultPtr &);
+
+        private:
+
+            ::Ice::AsyncResultPtr
+            _iceI_begin_sendSync(const ::std::string &, const ::RoboCompDSRD4::Delta &, const ::Ice::Context &,
+                                 const ::IceInternal::CallbackBasePtr &, const ::Ice::LocalObjectPtr &cookie = 0,
+                                 bool sync = false);
+
+        public:
+
+            static const ::std::string &ice_staticId();
+
+        protected:
+
+            virtual ::IceProxy::Ice::Object *_newInstance() const;
+        };
+
+        class DSRD4recv : public virtual ::Ice::Proxy<DSRD4recv, ::IceProxy::Ice::Object> {
+        public:
+
+            void finish(const ::std::string &iceP_name, const ::Ice::Context &context = ::Ice::noExplicitContext) {
+                end_finish(_iceI_begin_finish(iceP_name, context, ::IceInternal::dummyCallback, 0, true));
+            }
+
+            ::Ice::AsyncResultPtr
+            begin_finish(const ::std::string &iceP_name, const ::Ice::Context &context = ::Ice::noExplicitContext) {
+                return _iceI_begin_finish(iceP_name, context, ::IceInternal::dummyCallback, 0);
+            }
+
+            ::Ice::AsyncResultPtr begin_finish(const ::std::string &iceP_name, const ::Ice::CallbackPtr &del,
+                                               const ::Ice::LocalObjectPtr &cookie = 0) {
+                return _iceI_begin_finish(iceP_name, ::Ice::noExplicitContext, del, cookie);
+            }
+
+            ::Ice::AsyncResultPtr
+            begin_finish(const ::std::string &iceP_name, const ::Ice::Context &context, const ::Ice::CallbackPtr &del,
+                         const ::Ice::LocalObjectPtr &cookie = 0) {
+                return _iceI_begin_finish(iceP_name, context, del, cookie);
+            }
+
+            ::Ice::AsyncResultPtr
+            begin_finish(const ::std::string &iceP_name, const ::RoboCompDSRD4::Callback_DSRD4recv_finishPtr &del,
+                         const ::Ice::LocalObjectPtr &cookie = 0) {
+                return _iceI_begin_finish(iceP_name, ::Ice::noExplicitContext, del, cookie);
+            }
+
+            ::Ice::AsyncResultPtr begin_finish(const ::std::string &iceP_name, const ::Ice::Context &context,
+                                               const ::RoboCompDSRD4::Callback_DSRD4recv_finishPtr &del,
+                                               const ::Ice::LocalObjectPtr &cookie = 0) {
+                return _iceI_begin_finish(iceP_name, context, del, cookie);
+            }
+
+            void end_finish(const ::Ice::AsyncResultPtr &);
+
+        private:
+
+            ::Ice::AsyncResultPtr
+            _iceI_begin_finish(const ::std::string &, const ::Ice::Context &, const ::IceInternal::CallbackBasePtr &,
+                               const ::Ice::LocalObjectPtr &cookie = 0, bool sync = false);
+
+        public:
+
+            static const ::std::string &ice_staticId();
+
+        protected:
+
+            virtual ::IceProxy::Ice::Object *_newInstance() const;
+        };
+
+        class DSRD4send : public virtual ::Ice::Proxy<DSRD4send, ::IceProxy::Ice::Object> {
+        public:
+
+            void getData(::RoboCompDSRD4::Delta &iceP_d, ::RoboCompDSRD4::DSContext &iceP_dscontext,
+                         const ::Ice::Context &context = ::Ice::noExplicitContext) {
+                end_getData(iceP_d, iceP_dscontext,
+                            _iceI_begin_getData(context, ::IceInternal::dummyCallback, 0, true));
+            }
+
+            ::Ice::AsyncResultPtr begin_getData(const ::Ice::Context &context = ::Ice::noExplicitContext) {
+                return _iceI_begin_getData(context, ::IceInternal::dummyCallback, 0);
+            }
+
+            ::Ice::AsyncResultPtr
+            begin_getData(const ::Ice::CallbackPtr &del, const ::Ice::LocalObjectPtr &cookie = 0) {
+                return _iceI_begin_getData(::Ice::noExplicitContext, del, cookie);
+            }
+
+            ::Ice::AsyncResultPtr begin_getData(const ::Ice::Context &context, const ::Ice::CallbackPtr &del,
+                                                const ::Ice::LocalObjectPtr &cookie = 0) {
+                return _iceI_begin_getData(context, del, cookie);
+            }
+
+            ::Ice::AsyncResultPtr begin_getData(const ::RoboCompDSRD4::Callback_DSRD4send_getDataPtr &del,
+                                                const ::Ice::LocalObjectPtr &cookie = 0) {
+                return _iceI_begin_getData(::Ice::noExplicitContext, del, cookie);
+            }
+
+            ::Ice::AsyncResultPtr
+            begin_getData(const ::Ice::Context &context, const ::RoboCompDSRD4::Callback_DSRD4send_getDataPtr &del,
+                          const ::Ice::LocalObjectPtr &cookie = 0) {
+                return _iceI_begin_getData(context, del, cookie);
+            }
+
+            void end_getData(::RoboCompDSRD4::Delta &iceP_d, ::RoboCompDSRD4::DSContext &iceP_dscontext,
+                             const ::Ice::AsyncResultPtr &);
+
+        private:
+
+            ::Ice::AsyncResultPtr _iceI_begin_getData(const ::Ice::Context &, const ::IceInternal::CallbackBasePtr &,
+                                                      const ::Ice::LocalObjectPtr &cookie = 0, bool sync = false);
+
+        public:
+
+            static const ::std::string &ice_staticId();
+
+        protected:
+
+            virtual ::IceProxy::Ice::Object *_newInstance() const;
+        };
+
     }
 
-private:
-
-    Response _response;
-};
-
-template<class T> Callback_DSRD4sync_sendSyncPtr
-newCallback_DSRD4sync_sendSync(const IceUtil::Handle<T>& instance, void (T::*cb)(bool), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_DSRD4sync_sendSync<T>(instance, cb, excb, sentcb);
 }
 
-template<class T> Callback_DSRD4sync_sendSyncPtr
-newCallback_DSRD4sync_sendSync(T* instance, void (T::*cb)(bool), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_DSRD4sync_sendSync<T>(instance, cb, excb, sentcb);
-}
+namespace RoboCompDSRD4 {
 
-template<class T, typename CT>
-class Callback_DSRD4sync_sendSync : public Callback_DSRD4sync_sendSync_Base, public ::IceInternal::TwowayCallback<T, CT>
-{
-public:
+    class DSRD4 : public virtual ::Ice::Object {
+    public:
 
-    typedef IceUtil::Handle<T> TPtr;
+        typedef DSRD4Prx ProxyType;
+        typedef DSRD4Ptr PointerType;
 
-    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
-    typedef void (T::*Sent)(bool , const CT&);
-    typedef void (T::*Response)(bool, const CT&);
+        virtual ~DSRD4();
 
-    Callback_DSRD4sync_sendSync(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallback<T, CT>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
+        virtual bool ice_isA(const ::std::string &, const ::Ice::Current & = ::Ice::emptyCurrent) const;
+
+        virtual ::std::vector<::std::string> ice_ids(const ::Ice::Current & = ::Ice::emptyCurrent) const;
+
+        virtual const ::std::string &ice_id(const ::Ice::Current & = ::Ice::emptyCurrent) const;
+
+        static const ::std::string &ice_staticId();
+
+        virtual void sendData(const ::RoboCompDSRD4::Delta &, const ::Ice::Current & = ::Ice::emptyCurrent) = 0;
+
+        bool _iceD_sendData(::IceInternal::Incoming &, const ::Ice::Current &);
+
+        virtual void sendPortDSRD4(const ::std::string &, const ::Ice::Current & = ::Ice::emptyCurrent) = 0;
+
+        bool _iceD_sendPortDSRD4(::IceInternal::Incoming &, const ::Ice::Current &);
+
+        virtual bool _iceDispatch(::IceInternal::Incoming &, const ::Ice::Current &);
+
+    protected:
+
+        virtual void _iceWriteImpl(::Ice::OutputStream *) const;
+
+        virtual void _iceReadImpl(::Ice::InputStream *);
+    };
+
+    inline bool operator==(const DSRD4 &lhs, const DSRD4 &rhs) {
+        return static_cast<const ::Ice::Object &>(lhs) == static_cast<const ::Ice::Object &>(rhs);
     }
 
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::RoboCompDSRD4::DSRD4syncPrx proxy = ::RoboCompDSRD4::DSRD4syncPrx::uncheckedCast(result->getProxy());
-        bool ret;
-        try
-        {
-            ret = proxy->end_sendSync(result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::Callback<T, CT>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::Callback<T, CT>::_callback.get()->*_response)(ret, CT::dynamicCast(result->getCookie()));
-        }
+    inline bool operator<(const DSRD4 &lhs, const DSRD4 &rhs) {
+        return static_cast<const ::Ice::Object &>(lhs) < static_cast<const ::Ice::Object &>(rhs);
     }
 
-private:
+    class DSRD4sync : public virtual ::Ice::Object {
+    public:
 
-    Response _response;
-};
+        typedef DSRD4syncPrx ProxyType;
+        typedef DSRD4syncPtr PointerType;
 
-template<class T, typename CT> Callback_DSRD4sync_sendSyncPtr
-newCallback_DSRD4sync_sendSync(const IceUtil::Handle<T>& instance, void (T::*cb)(bool, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_DSRD4sync_sendSync<T, CT>(instance, cb, excb, sentcb);
-}
+        virtual ~DSRD4sync();
 
-template<class T, typename CT> Callback_DSRD4sync_sendSyncPtr
-newCallback_DSRD4sync_sendSync(T* instance, void (T::*cb)(bool, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_DSRD4sync_sendSync<T, CT>(instance, cb, excb, sentcb);
-}
+        virtual bool ice_isA(const ::std::string &, const ::Ice::Current & = ::Ice::emptyCurrent) const;
 
-template<class T>
-class CallbackNC_DSRD4recv_finish : public Callback_DSRD4recv_finish_Base, public ::IceInternal::OnewayCallbackNC<T>
-{
-public:
+        virtual ::std::vector<::std::string> ice_ids(const ::Ice::Current & = ::Ice::emptyCurrent) const;
 
-    typedef IceUtil::Handle<T> TPtr;
+        virtual const ::std::string &ice_id(const ::Ice::Current & = ::Ice::emptyCurrent) const;
 
-    typedef void (T::*Exception)(const ::Ice::Exception&);
-    typedef void (T::*Sent)(bool);
-    typedef void (T::*Response)();
+        static const ::std::string &ice_staticId();
 
-    CallbackNC_DSRD4recv_finish(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::OnewayCallbackNC<T>(obj, cb, excb, sentcb)
-    {
-    }
-};
+        virtual bool sendSync(const ::std::string &, const ::RoboCompDSRD4::Delta &,
+                              const ::Ice::Current & = ::Ice::emptyCurrent) = 0;
 
-template<class T> Callback_DSRD4recv_finishPtr
-newCallback_DSRD4recv_finish(const IceUtil::Handle<T>& instance, void (T::*cb)(), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_DSRD4recv_finish<T>(instance, cb, excb, sentcb);
-}
+        bool _iceD_sendSync(::IceInternal::Incoming &, const ::Ice::Current &);
 
-template<class T> Callback_DSRD4recv_finishPtr
-newCallback_DSRD4recv_finish(const IceUtil::Handle<T>& instance, void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_DSRD4recv_finish<T>(instance, 0, excb, sentcb);
-}
+        virtual bool _iceDispatch(::IceInternal::Incoming &, const ::Ice::Current &);
 
-template<class T> Callback_DSRD4recv_finishPtr
-newCallback_DSRD4recv_finish(T* instance, void (T::*cb)(), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_DSRD4recv_finish<T>(instance, cb, excb, sentcb);
-}
+    protected:
 
-template<class T> Callback_DSRD4recv_finishPtr
-newCallback_DSRD4recv_finish(T* instance, void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_DSRD4recv_finish<T>(instance, 0, excb, sentcb);
-}
+        virtual void _iceWriteImpl(::Ice::OutputStream *) const;
 
-template<class T, typename CT>
-class Callback_DSRD4recv_finish : public Callback_DSRD4recv_finish_Base, public ::IceInternal::OnewayCallback<T, CT>
-{
-public:
+        virtual void _iceReadImpl(::Ice::InputStream *);
+    };
 
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
-    typedef void (T::*Sent)(bool , const CT&);
-    typedef void (T::*Response)(const CT&);
-
-    Callback_DSRD4recv_finish(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::OnewayCallback<T, CT>(obj, cb, excb, sentcb)
-    {
-    }
-};
-
-template<class T, typename CT> Callback_DSRD4recv_finishPtr
-newCallback_DSRD4recv_finish(const IceUtil::Handle<T>& instance, void (T::*cb)(const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_DSRD4recv_finish<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT> Callback_DSRD4recv_finishPtr
-newCallback_DSRD4recv_finish(const IceUtil::Handle<T>& instance, void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_DSRD4recv_finish<T, CT>(instance, 0, excb, sentcb);
-}
-
-template<class T, typename CT> Callback_DSRD4recv_finishPtr
-newCallback_DSRD4recv_finish(T* instance, void (T::*cb)(const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_DSRD4recv_finish<T, CT>(instance, cb, excb, sentcb);
-}
-
-template<class T, typename CT> Callback_DSRD4recv_finishPtr
-newCallback_DSRD4recv_finish(T* instance, void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_DSRD4recv_finish<T, CT>(instance, 0, excb, sentcb);
-}
-
-template<class T>
-class CallbackNC_DSRD4send_getData : public Callback_DSRD4send_getData_Base, public ::IceInternal::TwowayCallbackNC<T>
-{
-public:
-
-    typedef IceUtil::Handle<T> TPtr;
-
-    typedef void (T::*Exception)(const ::Ice::Exception&);
-    typedef void (T::*Sent)(bool);
-    typedef void (T::*Response)(const ::RoboCompDSRD4::Delta&);
-
-    CallbackNC_DSRD4send_getData(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallbackNC<T>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
+    inline bool operator==(const DSRD4sync &lhs, const DSRD4sync &rhs) {
+        return static_cast<const ::Ice::Object &>(lhs) == static_cast<const ::Ice::Object &>(rhs);
     }
 
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::RoboCompDSRD4::DSRD4sendPrx proxy = ::RoboCompDSRD4::DSRD4sendPrx::uncheckedCast(result->getProxy());
-        ::RoboCompDSRD4::Delta iceP_d;
-        try
-        {
-            proxy->end_getData(iceP_d, result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::CallbackNC<T>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::CallbackNC<T>::_callback.get()->*_response)(iceP_d);
-        }
+    inline bool operator<(const DSRD4sync &lhs, const DSRD4sync &rhs) {
+        return static_cast<const ::Ice::Object &>(lhs) < static_cast<const ::Ice::Object &>(rhs);
     }
 
-private:
+    class DSRD4recv : public virtual ::Ice::Object {
+    public:
 
-    Response _response;
-};
+        typedef DSRD4recvPrx ProxyType;
+        typedef DSRD4recvPtr PointerType;
 
-template<class T> Callback_DSRD4send_getDataPtr
-newCallback_DSRD4send_getData(const IceUtil::Handle<T>& instance, void (T::*cb)(const ::RoboCompDSRD4::Delta&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_DSRD4send_getData<T>(instance, cb, excb, sentcb);
-}
+        virtual ~DSRD4recv();
 
-template<class T> Callback_DSRD4send_getDataPtr
-newCallback_DSRD4send_getData(T* instance, void (T::*cb)(const ::RoboCompDSRD4::Delta&), void (T::*excb)(const ::Ice::Exception&), void (T::*sentcb)(bool) = 0)
-{
-    return new CallbackNC_DSRD4send_getData<T>(instance, cb, excb, sentcb);
-}
+        virtual bool ice_isA(const ::std::string &, const ::Ice::Current & = ::Ice::emptyCurrent) const;
 
-template<class T, typename CT>
-class Callback_DSRD4send_getData : public Callback_DSRD4send_getData_Base, public ::IceInternal::TwowayCallback<T, CT>
-{
-public:
+        virtual ::std::vector<::std::string> ice_ids(const ::Ice::Current & = ::Ice::emptyCurrent) const;
 
-    typedef IceUtil::Handle<T> TPtr;
+        virtual const ::std::string &ice_id(const ::Ice::Current & = ::Ice::emptyCurrent) const;
 
-    typedef void (T::*Exception)(const ::Ice::Exception& , const CT&);
-    typedef void (T::*Sent)(bool , const CT&);
-    typedef void (T::*Response)(const ::RoboCompDSRD4::Delta&, const CT&);
+        static const ::std::string &ice_staticId();
 
-    Callback_DSRD4send_getData(const TPtr& obj, Response cb, Exception excb, Sent sentcb)
-        : ::IceInternal::TwowayCallback<T, CT>(obj, cb != 0, excb, sentcb), _response(cb)
-    {
+        virtual void finish(const ::std::string &, const ::Ice::Current & = ::Ice::emptyCurrent) = 0;
+
+        bool _iceD_finish(::IceInternal::Incoming &, const ::Ice::Current &);
+
+        virtual bool _iceDispatch(::IceInternal::Incoming &, const ::Ice::Current &);
+
+    protected:
+
+        virtual void _iceWriteImpl(::Ice::OutputStream *) const;
+
+        virtual void _iceReadImpl(::Ice::InputStream *);
+    };
+
+    inline bool operator==(const DSRD4recv &lhs, const DSRD4recv &rhs) {
+        return static_cast<const ::Ice::Object &>(lhs) == static_cast<const ::Ice::Object &>(rhs);
     }
 
-    virtual void completed(const ::Ice::AsyncResultPtr& result) const
-    {
-        ::RoboCompDSRD4::DSRD4sendPrx proxy = ::RoboCompDSRD4::DSRD4sendPrx::uncheckedCast(result->getProxy());
-        ::RoboCompDSRD4::Delta iceP_d;
-        try
-        {
-            proxy->end_getData(iceP_d, result);
-        }
-        catch(const ::Ice::Exception& ex)
-        {
-            ::IceInternal::Callback<T, CT>::exception(result, ex);
-            return;
-        }
-        if(_response)
-        {
-            (::IceInternal::Callback<T, CT>::_callback.get()->*_response)(iceP_d, CT::dynamicCast(result->getCookie()));
-        }
+    inline bool operator<(const DSRD4recv &lhs, const DSRD4recv &rhs) {
+        return static_cast<const ::Ice::Object &>(lhs) < static_cast<const ::Ice::Object &>(rhs);
     }
 
-private:
+    class DSRD4send : public virtual ::Ice::Object {
+    public:
 
-    Response _response;
-};
+        typedef DSRD4sendPrx ProxyType;
+        typedef DSRD4sendPtr PointerType;
 
-template<class T, typename CT> Callback_DSRD4send_getDataPtr
-newCallback_DSRD4send_getData(const IceUtil::Handle<T>& instance, void (T::*cb)(const ::RoboCompDSRD4::Delta&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_DSRD4send_getData<T, CT>(instance, cb, excb, sentcb);
+        virtual ~DSRD4send();
+
+        virtual bool ice_isA(const ::std::string &, const ::Ice::Current & = ::Ice::emptyCurrent) const;
+
+        virtual ::std::vector<::std::string> ice_ids(const ::Ice::Current & = ::Ice::emptyCurrent) const;
+
+        virtual const ::std::string &ice_id(const ::Ice::Current & = ::Ice::emptyCurrent) const;
+
+        static const ::std::string &ice_staticId();
+
+        virtual void getData(::RoboCompDSRD4::Delta &, ::RoboCompDSRD4::DSContext &,
+                             const ::Ice::Current & = ::Ice::emptyCurrent) = 0;
+
+        bool _iceD_getData(::IceInternal::Incoming &, const ::Ice::Current &);
+
+        virtual bool _iceDispatch(::IceInternal::Incoming &, const ::Ice::Current &);
+
+    protected:
+
+        virtual void _iceWriteImpl(::Ice::OutputStream *) const;
+
+        virtual void _iceReadImpl(::Ice::InputStream *);
+    };
+
+    inline bool operator==(const DSRD4send &lhs, const DSRD4send &rhs) {
+        return static_cast<const ::Ice::Object &>(lhs) == static_cast<const ::Ice::Object &>(rhs);
+    }
+
+    inline bool operator<(const DSRD4send &lhs, const DSRD4send &rhs) {
+        return static_cast<const ::Ice::Object &>(lhs) < static_cast<const ::Ice::Object &>(rhs);
+    }
+
 }
 
-template<class T, typename CT> Callback_DSRD4send_getDataPtr
-newCallback_DSRD4send_getData(T* instance, void (T::*cb)(const ::RoboCompDSRD4::Delta&, const CT&), void (T::*excb)(const ::Ice::Exception&, const CT&), void (T::*sentcb)(bool, const CT&) = 0)
-{
-    return new Callback_DSRD4send_getData<T, CT>(instance, cb, excb, sentcb);
+namespace Ice {
+
+    template<>
+    struct StreamableTraits<::RoboCompDSRD4::Pair> {
+        static const StreamHelperCategory helper = StreamHelperCategoryStruct;
+        static const int minWireSize = 2;
+        static const bool fixedLength = false;
+    };
+
+    template<typename S>
+    struct StreamWriter<::RoboCompDSRD4::Pair, S> {
+        static void write(S *ostr, const ::RoboCompDSRD4::Pair &v) {
+            ostr->write(v.key);
+            ostr->write(v.value);
+        }
+    };
+
+    template<typename S>
+    struct StreamReader<::RoboCompDSRD4::Pair, S> {
+        static void read(S *istr, ::RoboCompDSRD4::Pair &v) {
+            istr->read(v.key);
+            istr->read(v.value);
+        }
+    };
+
+    template<>
+    struct StreamableTraits<::RoboCompDSRD4::NeighborsAttribs> {
+        static const StreamHelperCategory helper = StreamHelperCategoryStruct;
+        static const int minWireSize = 2;
+        static const bool fixedLength = false;
+    };
+
+    template<typename S>
+    struct StreamWriter<::RoboCompDSRD4::NeighborsAttribs, S> {
+        static void write(S *ostr, const ::RoboCompDSRD4::NeighborsAttribs &v) {
+            ostr->write(v.uid);
+            ostr->write(v.neighbors_attribs);
+        }
+    };
+
+    template<typename S>
+    struct StreamReader<::RoboCompDSRD4::NeighborsAttribs, S> {
+        static void read(S *istr, ::RoboCompDSRD4::NeighborsAttribs &v) {
+            istr->read(v.uid);
+            istr->read(v.neighbors_attribs);
+        }
+    };
+
+    template<>
+    struct StreamableTraits<::RoboCompDSRD4::RoboCompValue> {
+        static const StreamHelperCategory helper = StreamHelperCategoryStruct;
+        static const int minWireSize = 4;
+        static const bool fixedLength = true;
+    };
+
+    template<typename S>
+    struct StreamWriter<::RoboCompDSRD4::RoboCompValue, S> {
+        static void write(S *ostr, const ::RoboCompDSRD4::RoboCompValue &v) {
+            ostr->write(v.value);
+        }
+    };
+
+    template<typename S>
+    struct StreamReader<::RoboCompDSRD4::RoboCompValue, S> {
+        static void read(S *istr, ::RoboCompDSRD4::RoboCompValue &v) {
+            istr->read(v.value);
+        }
+    };
+
+    template<>
+    struct StreamableTraits<::RoboCompDSRD4::CRDTData> {
+        static const StreamHelperCategory helper = StreamHelperCategoryStruct;
+        static const int minWireSize = 9;
+        static const bool fixedLength = false;
+    };
+
+    template<typename S>
+    struct StreamWriter<::RoboCompDSRD4::CRDTData, S> {
+        static void write(S *ostr, const ::RoboCompDSRD4::CRDTData &v) {
+            ostr->write(v.uid);
+            ostr->write(v.cc);
+            ostr->write(v.dc);
+        }
+    };
+
+    template<typename S>
+    struct StreamReader<::RoboCompDSRD4::CRDTData, S> {
+        static void read(S *istr, ::RoboCompDSRD4::CRDTData &v) {
+            istr->read(v.uid);
+            istr->read(v.cc);
+            istr->read(v.dc);
+        }
+    };
+
+    template<>
+    struct StreamableTraits<::RoboCompDSRD4::DS> {
+        static const StreamHelperCategory helper = StreamHelperCategoryStruct;
+        static const int minWireSize = 15;
+        static const bool fixedLength = false;
+    };
+
+    template<typename S>
+    struct StreamWriter<::RoboCompDSRD4::DS, S> {
+        static void write(S *ostr, const ::RoboCompDSRD4::DS &v) {
+            ostr->write(v.id);
+            ostr->write(v.rcvalue);
+            ostr->write(v.neighbors);
+            ostr->write(v.crdt_data);
+        }
+    };
+
+    template<typename S>
+    struct StreamReader<::RoboCompDSRD4::DS, S> {
+        static void read(S *istr, ::RoboCompDSRD4::DS &v) {
+            istr->read(v.id);
+            istr->read(v.rcvalue);
+            istr->read(v.neighbors);
+            istr->read(v.crdt_data);
+        }
+    };
+
 }
+
+namespace RoboCompDSRD4 {
+
+    template<class T>
+    class CallbackNC_DSRD4_sendData : public Callback_DSRD4_sendData_Base, public ::IceInternal::OnewayCallbackNC<T> {
+    public:
+
+        typedef IceUtil::Handle<T> TPtr;
+
+        typedef void (T::*Exception)(const ::Ice::Exception &);
+
+        typedef void (T::*Sent)(bool);
+
+        typedef void (T::*Response)();
+
+        CallbackNC_DSRD4_sendData(const TPtr &obj, Response cb, Exception excb, Sent sentcb)
+                : ::IceInternal::OnewayCallbackNC<T>(obj, cb, excb, sentcb) {
+        }
+    };
+
+    template<class T>
+    Callback_DSRD4_sendDataPtr
+    newCallback_DSRD4_sendData(const IceUtil::Handle<T> &instance, void (T::*cb)(),
+                               void (T::*excb)(const ::Ice::Exception &), void (T::*sentcb)(bool) = 0) {
+        return new CallbackNC_DSRD4_sendData<T>(instance, cb, excb, sentcb);
+    }
+
+    template<class T>
+    Callback_DSRD4_sendDataPtr
+    newCallback_DSRD4_sendData(const IceUtil::Handle<T> &instance, void (T::*excb)(const ::Ice::Exception &),
+                               void (T::*sentcb)(bool) = 0) {
+        return new CallbackNC_DSRD4_sendData<T>(instance, 0, excb, sentcb);
+    }
+
+    template<class T>
+    Callback_DSRD4_sendDataPtr
+    newCallback_DSRD4_sendData(T *instance, void (T::*cb)(), void (T::*excb)(const ::Ice::Exception &),
+                               void (T::*sentcb)(bool) = 0) {
+        return new CallbackNC_DSRD4_sendData<T>(instance, cb, excb, sentcb);
+    }
+
+    template<class T>
+    Callback_DSRD4_sendDataPtr
+    newCallback_DSRD4_sendData(T *instance, void (T::*excb)(const ::Ice::Exception &), void (T::*sentcb)(bool) = 0) {
+        return new CallbackNC_DSRD4_sendData<T>(instance, 0, excb, sentcb);
+    }
+
+    template<class T, typename CT>
+    class Callback_DSRD4_sendData : public Callback_DSRD4_sendData_Base, public ::IceInternal::OnewayCallback<T, CT> {
+    public:
+
+        typedef IceUtil::Handle<T> TPtr;
+
+        typedef void (T::*Exception)(const ::Ice::Exception &, const CT &);
+
+        typedef void (T::*Sent)(bool, const CT &);
+
+        typedef void (T::*Response)(const CT &);
+
+        Callback_DSRD4_sendData(const TPtr &obj, Response cb, Exception excb, Sent sentcb)
+                : ::IceInternal::OnewayCallback<T, CT>(obj, cb, excb, sentcb) {
+        }
+    };
+
+    template<class T, typename CT>
+    Callback_DSRD4_sendDataPtr
+    newCallback_DSRD4_sendData(const IceUtil::Handle<T> &instance, void (T::*cb)(const CT &),
+                               void (T::*excb)(const ::Ice::Exception &, const CT &),
+                               void (T::*sentcb)(bool, const CT &) = 0) {
+        return new Callback_DSRD4_sendData<T, CT>(instance, cb, excb, sentcb);
+    }
+
+    template<class T, typename CT>
+    Callback_DSRD4_sendDataPtr
+    newCallback_DSRD4_sendData(const IceUtil::Handle<T> &instance,
+                               void (T::*excb)(const ::Ice::Exception &, const CT &),
+                               void (T::*sentcb)(bool, const CT &) = 0) {
+        return new Callback_DSRD4_sendData<T, CT>(instance, 0, excb, sentcb);
+    }
+
+    template<class T, typename CT>
+    Callback_DSRD4_sendDataPtr
+    newCallback_DSRD4_sendData(T *instance, void (T::*cb)(const CT &),
+                               void (T::*excb)(const ::Ice::Exception &, const CT &),
+                               void (T::*sentcb)(bool, const CT &) = 0) {
+        return new Callback_DSRD4_sendData<T, CT>(instance, cb, excb, sentcb);
+    }
+
+    template<class T, typename CT>
+    Callback_DSRD4_sendDataPtr
+    newCallback_DSRD4_sendData(T *instance, void (T::*excb)(const ::Ice::Exception &, const CT &),
+                               void (T::*sentcb)(bool, const CT &) = 0) {
+        return new Callback_DSRD4_sendData<T, CT>(instance, 0, excb, sentcb);
+    }
+
+    template<class T>
+    class CallbackNC_DSRD4_sendPortDSRD4
+            : public Callback_DSRD4_sendPortDSRD4_Base, public ::IceInternal::OnewayCallbackNC<T> {
+    public:
+
+        typedef IceUtil::Handle<T> TPtr;
+
+        typedef void (T::*Exception)(const ::Ice::Exception &);
+
+        typedef void (T::*Sent)(bool);
+
+        typedef void (T::*Response)();
+
+        CallbackNC_DSRD4_sendPortDSRD4(const TPtr &obj, Response cb, Exception excb, Sent sentcb)
+                : ::IceInternal::OnewayCallbackNC<T>(obj, cb, excb, sentcb) {
+        }
+    };
+
+    template<class T>
+    Callback_DSRD4_sendPortDSRD4Ptr
+    newCallback_DSRD4_sendPortDSRD4(const IceUtil::Handle<T> &instance, void (T::*cb)(),
+                                    void (T::*excb)(const ::Ice::Exception &), void (T::*sentcb)(bool) = 0) {
+        return new CallbackNC_DSRD4_sendPortDSRD4<T>(instance, cb, excb, sentcb);
+    }
+
+    template<class T>
+    Callback_DSRD4_sendPortDSRD4Ptr
+    newCallback_DSRD4_sendPortDSRD4(const IceUtil::Handle<T> &instance, void (T::*excb)(const ::Ice::Exception &),
+                                    void (T::*sentcb)(bool) = 0) {
+        return new CallbackNC_DSRD4_sendPortDSRD4<T>(instance, 0, excb, sentcb);
+    }
+
+    template<class T>
+    Callback_DSRD4_sendPortDSRD4Ptr
+    newCallback_DSRD4_sendPortDSRD4(T *instance, void (T::*cb)(), void (T::*excb)(const ::Ice::Exception &),
+                                    void (T::*sentcb)(bool) = 0) {
+        return new CallbackNC_DSRD4_sendPortDSRD4<T>(instance, cb, excb, sentcb);
+    }
+
+    template<class T>
+    Callback_DSRD4_sendPortDSRD4Ptr
+    newCallback_DSRD4_sendPortDSRD4(T *instance, void (T::*excb)(const ::Ice::Exception &),
+                                    void (T::*sentcb)(bool) = 0) {
+        return new CallbackNC_DSRD4_sendPortDSRD4<T>(instance, 0, excb, sentcb);
+    }
+
+    template<class T, typename CT>
+    class Callback_DSRD4_sendPortDSRD4
+            : public Callback_DSRD4_sendPortDSRD4_Base, public ::IceInternal::OnewayCallback<T, CT> {
+    public:
+
+        typedef IceUtil::Handle<T> TPtr;
+
+        typedef void (T::*Exception)(const ::Ice::Exception &, const CT &);
+
+        typedef void (T::*Sent)(bool, const CT &);
+
+        typedef void (T::*Response)(const CT &);
+
+        Callback_DSRD4_sendPortDSRD4(const TPtr &obj, Response cb, Exception excb, Sent sentcb)
+                : ::IceInternal::OnewayCallback<T, CT>(obj, cb, excb, sentcb) {
+        }
+    };
+
+    template<class T, typename CT>
+    Callback_DSRD4_sendPortDSRD4Ptr
+    newCallback_DSRD4_sendPortDSRD4(const IceUtil::Handle<T> &instance, void (T::*cb)(const CT &),
+                                    void (T::*excb)(const ::Ice::Exception &, const CT &),
+                                    void (T::*sentcb)(bool, const CT &) = 0) {
+        return new Callback_DSRD4_sendPortDSRD4<T, CT>(instance, cb, excb, sentcb);
+    }
+
+    template<class T, typename CT>
+    Callback_DSRD4_sendPortDSRD4Ptr
+    newCallback_DSRD4_sendPortDSRD4(const IceUtil::Handle<T> &instance,
+                                    void (T::*excb)(const ::Ice::Exception &, const CT &),
+                                    void (T::*sentcb)(bool, const CT &) = 0) {
+        return new Callback_DSRD4_sendPortDSRD4<T, CT>(instance, 0, excb, sentcb);
+    }
+
+    template<class T, typename CT>
+    Callback_DSRD4_sendPortDSRD4Ptr
+    newCallback_DSRD4_sendPortDSRD4(T *instance, void (T::*cb)(const CT &),
+                                    void (T::*excb)(const ::Ice::Exception &, const CT &),
+                                    void (T::*sentcb)(bool, const CT &) = 0) {
+        return new Callback_DSRD4_sendPortDSRD4<T, CT>(instance, cb, excb, sentcb);
+    }
+
+    template<class T, typename CT>
+    Callback_DSRD4_sendPortDSRD4Ptr
+    newCallback_DSRD4_sendPortDSRD4(T *instance, void (T::*excb)(const ::Ice::Exception &, const CT &),
+                                    void (T::*sentcb)(bool, const CT &) = 0) {
+        return new Callback_DSRD4_sendPortDSRD4<T, CT>(instance, 0, excb, sentcb);
+    }
+
+    template<class T>
+    class CallbackNC_DSRD4sync_sendSync
+            : public Callback_DSRD4sync_sendSync_Base, public ::IceInternal::TwowayCallbackNC<T> {
+    public:
+
+        typedef IceUtil::Handle<T> TPtr;
+
+        typedef void (T::*Exception)(const ::Ice::Exception &);
+
+        typedef void (T::*Sent)(bool);
+
+        typedef void (T::*Response)(bool);
+
+        CallbackNC_DSRD4sync_sendSync(const TPtr &obj, Response cb, Exception excb, Sent sentcb)
+                : ::IceInternal::TwowayCallbackNC<T>(obj, cb != 0, excb, sentcb), _response(cb) {
+        }
+
+        virtual void completed(const ::Ice::AsyncResultPtr &result) const {
+            ::RoboCompDSRD4::DSRD4syncPrx proxy = ::RoboCompDSRD4::DSRD4syncPrx::uncheckedCast(result->getProxy());
+            bool ret;
+            try {
+                ret = proxy->end_sendSync(result);
+            }
+            catch (const ::Ice::Exception &ex) {
+                ::IceInternal::CallbackNC<T>::exception(result, ex);
+                return;
+            }
+            if (_response) {
+                (::IceInternal::CallbackNC<T>::_callback.get()->*_response)(ret);
+            }
+        }
+
+    private:
+
+        Response _response;
+    };
+
+    template<class T>
+    Callback_DSRD4sync_sendSyncPtr
+    newCallback_DSRD4sync_sendSync(const IceUtil::Handle<T> &instance, void (T::*cb)(bool),
+                                   void (T::*excb)(const ::Ice::Exception &), void (T::*sentcb)(bool) = 0) {
+        return new CallbackNC_DSRD4sync_sendSync<T>(instance, cb, excb, sentcb);
+    }
+
+    template<class T>
+    Callback_DSRD4sync_sendSyncPtr
+    newCallback_DSRD4sync_sendSync(T *instance, void (T::*cb)(bool), void (T::*excb)(const ::Ice::Exception &),
+                                   void (T::*sentcb)(bool) = 0) {
+        return new CallbackNC_DSRD4sync_sendSync<T>(instance, cb, excb, sentcb);
+    }
+
+    template<class T, typename CT>
+    class Callback_DSRD4sync_sendSync
+            : public Callback_DSRD4sync_sendSync_Base, public ::IceInternal::TwowayCallback<T, CT> {
+    public:
+
+        typedef IceUtil::Handle<T> TPtr;
+
+        typedef void (T::*Exception)(const ::Ice::Exception &, const CT &);
+
+        typedef void (T::*Sent)(bool, const CT &);
+
+        typedef void (T::*Response)(bool, const CT &);
+
+        Callback_DSRD4sync_sendSync(const TPtr &obj, Response cb, Exception excb, Sent sentcb)
+                : ::IceInternal::TwowayCallback<T, CT>(obj, cb != 0, excb, sentcb), _response(cb) {
+        }
+
+        virtual void completed(const ::Ice::AsyncResultPtr &result) const {
+            ::RoboCompDSRD4::DSRD4syncPrx proxy = ::RoboCompDSRD4::DSRD4syncPrx::uncheckedCast(result->getProxy());
+            bool ret;
+            try {
+                ret = proxy->end_sendSync(result);
+            }
+            catch (const ::Ice::Exception &ex) {
+                ::IceInternal::Callback<T, CT>::exception(result, ex);
+                return;
+            }
+            if (_response) {
+                (::IceInternal::Callback<T, CT>::_callback.get()->*_response)(ret,
+                                                                              CT::dynamicCast(result->getCookie()));
+            }
+        }
+
+    private:
+
+        Response _response;
+    };
+
+    template<class T, typename CT>
+    Callback_DSRD4sync_sendSyncPtr
+    newCallback_DSRD4sync_sendSync(const IceUtil::Handle<T> &instance, void (T::*cb)(bool, const CT &),
+                                   void (T::*excb)(const ::Ice::Exception &, const CT &),
+                                   void (T::*sentcb)(bool, const CT &) = 0) {
+        return new Callback_DSRD4sync_sendSync<T, CT>(instance, cb, excb, sentcb);
+    }
+
+    template<class T, typename CT>
+    Callback_DSRD4sync_sendSyncPtr
+    newCallback_DSRD4sync_sendSync(T *instance, void (T::*cb)(bool, const CT &),
+                                   void (T::*excb)(const ::Ice::Exception &, const CT &),
+                                   void (T::*sentcb)(bool, const CT &) = 0) {
+        return new Callback_DSRD4sync_sendSync<T, CT>(instance, cb, excb, sentcb);
+    }
+
+    template<class T>
+    class CallbackNC_DSRD4recv_finish
+            : public Callback_DSRD4recv_finish_Base, public ::IceInternal::OnewayCallbackNC<T> {
+    public:
+
+        typedef IceUtil::Handle<T> TPtr;
+
+        typedef void (T::*Exception)(const ::Ice::Exception &);
+
+        typedef void (T::*Sent)(bool);
+
+        typedef void (T::*Response)();
+
+        CallbackNC_DSRD4recv_finish(const TPtr &obj, Response cb, Exception excb, Sent sentcb)
+                : ::IceInternal::OnewayCallbackNC<T>(obj, cb, excb, sentcb) {
+        }
+    };
+
+    template<class T>
+    Callback_DSRD4recv_finishPtr
+    newCallback_DSRD4recv_finish(const IceUtil::Handle<T> &instance, void (T::*cb)(),
+                                 void (T::*excb)(const ::Ice::Exception &), void (T::*sentcb)(bool) = 0) {
+        return new CallbackNC_DSRD4recv_finish<T>(instance, cb, excb, sentcb);
+    }
+
+    template<class T>
+    Callback_DSRD4recv_finishPtr
+    newCallback_DSRD4recv_finish(const IceUtil::Handle<T> &instance, void (T::*excb)(const ::Ice::Exception &),
+                                 void (T::*sentcb)(bool) = 0) {
+        return new CallbackNC_DSRD4recv_finish<T>(instance, 0, excb, sentcb);
+    }
+
+    template<class T>
+    Callback_DSRD4recv_finishPtr
+    newCallback_DSRD4recv_finish(T *instance, void (T::*cb)(), void (T::*excb)(const ::Ice::Exception &),
+                                 void (T::*sentcb)(bool) = 0) {
+        return new CallbackNC_DSRD4recv_finish<T>(instance, cb, excb, sentcb);
+    }
+
+    template<class T>
+    Callback_DSRD4recv_finishPtr
+    newCallback_DSRD4recv_finish(T *instance, void (T::*excb)(const ::Ice::Exception &), void (T::*sentcb)(bool) = 0) {
+        return new CallbackNC_DSRD4recv_finish<T>(instance, 0, excb, sentcb);
+    }
+
+    template<class T, typename CT>
+    class Callback_DSRD4recv_finish
+            : public Callback_DSRD4recv_finish_Base, public ::IceInternal::OnewayCallback<T, CT> {
+    public:
+
+        typedef IceUtil::Handle<T> TPtr;
+
+        typedef void (T::*Exception)(const ::Ice::Exception &, const CT &);
+
+        typedef void (T::*Sent)(bool, const CT &);
+
+        typedef void (T::*Response)(const CT &);
+
+        Callback_DSRD4recv_finish(const TPtr &obj, Response cb, Exception excb, Sent sentcb)
+                : ::IceInternal::OnewayCallback<T, CT>(obj, cb, excb, sentcb) {
+        }
+    };
+
+    template<class T, typename CT>
+    Callback_DSRD4recv_finishPtr
+    newCallback_DSRD4recv_finish(const IceUtil::Handle<T> &instance, void (T::*cb)(const CT &),
+                                 void (T::*excb)(const ::Ice::Exception &, const CT &),
+                                 void (T::*sentcb)(bool, const CT &) = 0) {
+        return new Callback_DSRD4recv_finish<T, CT>(instance, cb, excb, sentcb);
+    }
+
+    template<class T, typename CT>
+    Callback_DSRD4recv_finishPtr
+    newCallback_DSRD4recv_finish(const IceUtil::Handle<T> &instance,
+                                 void (T::*excb)(const ::Ice::Exception &, const CT &),
+                                 void (T::*sentcb)(bool, const CT &) = 0) {
+        return new Callback_DSRD4recv_finish<T, CT>(instance, 0, excb, sentcb);
+    }
+
+    template<class T, typename CT>
+    Callback_DSRD4recv_finishPtr
+    newCallback_DSRD4recv_finish(T *instance, void (T::*cb)(const CT &),
+                                 void (T::*excb)(const ::Ice::Exception &, const CT &),
+                                 void (T::*sentcb)(bool, const CT &) = 0) {
+        return new Callback_DSRD4recv_finish<T, CT>(instance, cb, excb, sentcb);
+    }
+
+    template<class T, typename CT>
+    Callback_DSRD4recv_finishPtr
+    newCallback_DSRD4recv_finish(T *instance, void (T::*excb)(const ::Ice::Exception &, const CT &),
+                                 void (T::*sentcb)(bool, const CT &) = 0) {
+        return new Callback_DSRD4recv_finish<T, CT>(instance, 0, excb, sentcb);
+    }
+
+    template<class T>
+    class CallbackNC_DSRD4send_getData
+            : public Callback_DSRD4send_getData_Base, public ::IceInternal::TwowayCallbackNC<T> {
+    public:
+
+        typedef IceUtil::Handle<T> TPtr;
+
+        typedef void (T::*Exception)(const ::Ice::Exception &);
+
+        typedef void (T::*Sent)(bool);
+
+        typedef void (T::*Response)(const ::RoboCompDSRD4::Delta &, const ::RoboCompDSRD4::DSContext &);
+
+        CallbackNC_DSRD4send_getData(const TPtr &obj, Response cb, Exception excb, Sent sentcb)
+                : ::IceInternal::TwowayCallbackNC<T>(obj, cb != 0, excb, sentcb), _response(cb) {
+        }
+
+        virtual void completed(const ::Ice::AsyncResultPtr &result) const {
+            ::RoboCompDSRD4::DSRD4sendPrx proxy = ::RoboCompDSRD4::DSRD4sendPrx::uncheckedCast(result->getProxy());
+            ::RoboCompDSRD4::Delta iceP_d;
+            ::RoboCompDSRD4::DSContext iceP_dscontext;
+            try {
+                proxy->end_getData(iceP_d, iceP_dscontext, result);
+            }
+            catch (const ::Ice::Exception &ex) {
+                ::IceInternal::CallbackNC<T>::exception(result, ex);
+                return;
+            }
+            if (_response) {
+                (::IceInternal::CallbackNC<T>::_callback.get()->*_response)(iceP_d, iceP_dscontext);
+            }
+        }
+
+    private:
+
+        Response _response;
+    };
+
+    template<class T>
+    Callback_DSRD4send_getDataPtr
+    newCallback_DSRD4send_getData(const IceUtil::Handle<T> &instance,
+                                  void (T::*cb)(const ::RoboCompDSRD4::Delta &, const ::RoboCompDSRD4::DSContext &),
+                                  void (T::*excb)(const ::Ice::Exception &), void (T::*sentcb)(bool) = 0) {
+        return new CallbackNC_DSRD4send_getData<T>(instance, cb, excb, sentcb);
+    }
+
+    template<class T>
+    Callback_DSRD4send_getDataPtr
+    newCallback_DSRD4send_getData(T *instance,
+                                  void (T::*cb)(const ::RoboCompDSRD4::Delta &, const ::RoboCompDSRD4::DSContext &),
+                                  void (T::*excb)(const ::Ice::Exception &), void (T::*sentcb)(bool) = 0) {
+        return new CallbackNC_DSRD4send_getData<T>(instance, cb, excb, sentcb);
+    }
+
+    template<class T, typename CT>
+    class Callback_DSRD4send_getData
+            : public Callback_DSRD4send_getData_Base, public ::IceInternal::TwowayCallback<T, CT> {
+    public:
+
+        typedef IceUtil::Handle<T> TPtr;
+
+        typedef void (T::*Exception)(const ::Ice::Exception &, const CT &);
+
+        typedef void (T::*Sent)(bool, const CT &);
+
+        typedef void (T::*Response)(const ::RoboCompDSRD4::Delta &, const ::RoboCompDSRD4::DSContext &, const CT &);
+
+        Callback_DSRD4send_getData(const TPtr &obj, Response cb, Exception excb, Sent sentcb)
+                : ::IceInternal::TwowayCallback<T, CT>(obj, cb != 0, excb, sentcb), _response(cb) {
+        }
+
+        virtual void completed(const ::Ice::AsyncResultPtr &result) const {
+            ::RoboCompDSRD4::DSRD4sendPrx proxy = ::RoboCompDSRD4::DSRD4sendPrx::uncheckedCast(result->getProxy());
+            ::RoboCompDSRD4::Delta iceP_d;
+            ::RoboCompDSRD4::DSContext iceP_dscontext;
+            try {
+                proxy->end_getData(iceP_d, iceP_dscontext, result);
+            }
+            catch (const ::Ice::Exception &ex) {
+                ::IceInternal::Callback<T, CT>::exception(result, ex);
+                return;
+            }
+            if (_response) {
+                (::IceInternal::Callback<T, CT>::_callback.get()->*_response)(iceP_d, iceP_dscontext,
+                                                                              CT::dynamicCast(result->getCookie()));
+            }
+        }
+
+    private:
+
+        Response _response;
+    };
+
+    template<class T, typename CT>
+    Callback_DSRD4send_getDataPtr
+    newCallback_DSRD4send_getData(const IceUtil::Handle<T> &instance,
+                                  void (T::*cb)(const ::RoboCompDSRD4::Delta &, const ::RoboCompDSRD4::DSContext &,
+                                                const CT &), void (T::*excb)(const ::Ice::Exception &, const CT &),
+                                  void (T::*sentcb)(bool, const CT &) = 0) {
+        return new Callback_DSRD4send_getData<T, CT>(instance, cb, excb, sentcb);
+    }
+
+    template<class T, typename CT>
+    Callback_DSRD4send_getDataPtr
+    newCallback_DSRD4send_getData(T *instance,
+                                  void (T::*cb)(const ::RoboCompDSRD4::Delta &, const ::RoboCompDSRD4::DSContext &,
+                                                const CT &), void (T::*excb)(const ::Ice::Exception &, const CT &),
+                                  void (T::*sentcb)(bool, const CT &) = 0) {
+        return new Callback_DSRD4send_getData<T, CT>(instance, cb, excb, sentcb);
+    }
 
 }
 
 #endif
 
 #include <IceUtil/PopDisableWarnings.h>
+
 #endif

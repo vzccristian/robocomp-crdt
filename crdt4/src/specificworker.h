@@ -61,7 +61,7 @@ public:
     std::vector<DS> getNodesArray();
 
 	bool sendSync(const string &name,const Delta &d);
-    void getData(Delta &d);
+    void getData(Delta &d, DSContext &dscontext);
 	void sendData(const Delta &d);
 	void sendPortDSRD4(const string &port);
 

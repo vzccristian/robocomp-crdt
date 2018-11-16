@@ -398,9 +398,10 @@ RoboCompDSRD4::DSRD4send::_iceD_getData(::IceInternal::Incoming& inS, const ::Ic
     _iceCheckMode(::Ice::OperationMode::Normal, current.mode);
     inS.readEmptyParams();
     ::RoboCompDSRD4::Delta iceP_d;
-    this->getData(iceP_d, current);
+    ::RoboCompDSRD4::DSContext iceP_dscontext;
+    this->getData(iceP_d, iceP_dscontext, current);
     auto ostr = inS.startWriteParams();
-    ostr->writeAll(iceP_d);
+    ostr->writeAll(iceP_d, iceP_dscontext);
     inS.endWriteParams();
     return true;
 }
@@ -526,12 +527,18 @@ RoboCompDSRD4::DSRD4recvPrx::ice_staticId()
 }
 
 void
-RoboCompDSRD4::DSRD4sendPrx::_iceI_getData(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::RoboCompDSRD4::Delta>>& outAsync, const ::Ice::Context& context)
+RoboCompDSRD4::DSRD4sendPrx::_iceI_getData(const ::std::shared_ptr<::IceInternal::OutgoingAsyncT<::RoboCompDSRD4::DSRD4send::GetDataResult>>& outAsync, const ::Ice::Context& context)
 {
     _checkTwowayOnly(iceC_RoboCompDSRD4_DSRD4send_getData_name);
     outAsync->invoke(iceC_RoboCompDSRD4_DSRD4send_getData_name, ::Ice::OperationMode::Normal, ::Ice::FormatType::DefaultFormat, context,
         nullptr,
-        nullptr);
+        nullptr,
+        [](::Ice::InputStream* istr)
+        {
+            ::RoboCompDSRD4::DSRD4send::GetDataResult v;
+            istr->readAll(v.d, v.dscontext);
+            return v;
+        });
 }
 
 ::std::shared_ptr<::Ice::ObjectPrx>
@@ -808,7 +815,7 @@ IceProxy::RoboCompDSRD4::DSRD4send::_iceI_begin_getData(const ::Ice::Context& co
 }
 
 void
-IceProxy::RoboCompDSRD4::DSRD4send::end_getData(::RoboCompDSRD4::Delta& iceP_d, const ::Ice::AsyncResultPtr& result)
+IceProxy::RoboCompDSRD4::DSRD4send::end_getData(::RoboCompDSRD4::Delta& iceP_d, ::RoboCompDSRD4::DSContext& iceP_dscontext, const ::Ice::AsyncResultPtr& result)
 {
     ::Ice::AsyncResult::_check(result, this, iceC_RoboCompDSRD4_DSRD4send_getData_name);
     if(!result->_waitForResponse())
@@ -824,6 +831,7 @@ IceProxy::RoboCompDSRD4::DSRD4send::end_getData(::RoboCompDSRD4::Delta& iceP_d, 
     }
     ::Ice::InputStream* istr = result->_startReadParams();
     istr->read(iceP_d);
+    istr->read(iceP_dscontext);
     result->_endReadParams();
 }
 
@@ -1324,9 +1332,11 @@ RoboCompDSRD4::DSRD4send::_iceD_getData(::IceInternal::Incoming& inS, const ::Ic
     _iceCheckMode(::Ice::Normal, current.mode);
     inS.readEmptyParams();
     ::RoboCompDSRD4::Delta iceP_d;
-    this->getData(iceP_d, current);
+    ::RoboCompDSRD4::DSContext iceP_dscontext;
+    this->getData(iceP_d, iceP_dscontext, current);
     ::Ice::OutputStream* ostr = inS.startWriteParams();
     ostr->write(iceP_d);
+    ostr->write(iceP_dscontext);
     inS.endWriteParams();
     return true;
 }

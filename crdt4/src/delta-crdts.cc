@@ -100,7 +100,11 @@ pair<A,B> lexjoin(const pair<A,B>& l, const pair<A,B>& r)
 template<typename A, typename B> // Output a pair
 ostream &operator<<( ostream &output, const pair<A,B>& o)
 {
-    output << "(" << o.first << "," << o.second << ")";
+    try{
+        output << "(" << o.first << "," << o.second << ")";
+    } catch (const std::exception& ex) {
+        cout << "Error" << endl;
+    }
     return output;
 }
 
@@ -190,6 +194,10 @@ public:
         output << ")";
         return output;
     }
+
+    pair<map<K,int>, set<pair<K,int>>> getCcDc() {
+        return(pair<map<K,int>, set<pair<K,int>>>(cc,dc));
+    };
 
     pair<list<pair<K,int>>,list<pair<K,int>>> get()
     {
@@ -958,11 +966,9 @@ public:
         set<E> res;
         for (const auto &dv : dk.ds)
         {
-            cout <<"read"<< dv << endl;
             res.insert(dv.second);
 
         }
-        cout << "res " << res << endl;
         return res;
     }
 

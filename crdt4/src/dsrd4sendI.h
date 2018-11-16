@@ -34,7 +34,7 @@ public:
 DSRD4sendI(GenericWorker *_worker);
 	~DSRD4sendI();
 
-	void getData( Delta  &d, const Ice::Current&);
+	void getData( Delta  &d,  DSContext  &dscontext, const Ice::Current&);
 
 private:
 
