@@ -85,3 +85,5 @@ crdtchecker/src/CMakeFiles/
 crdtchecker/src/crdtchecker_autogen/
 crdtchecker/CMakeCache\.txt
 crdtchecker/DoxyFile
+
+crdt4/nodes-*.txt
