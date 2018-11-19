@@ -50,7 +50,7 @@ void SpecificWorker::check() {
         dsrd4send2_proxy->getData(dArray2, context2);
         dsrd4send3_proxy->getData(dArray3, context3);
         dsrd4send4_proxy->getData(dArray4, context4);
-        
+
         cout << "\nChecking data..." << dArray1.size() << " " << dArray2.size() << " " << dArray3.size() << " "
              << dArray4.size() << " items." << endl;
         cout << "Checking context..." << context1.size() << " " << context2.size() << " " << context3.size() << " "
@@ -64,7 +64,6 @@ void SpecificWorker::check() {
             cout << "Size OK." << endl;
 
         for (std::vector<int>::size_type i = 0; i != dArray1.size(); i++) {
-//                cout << dArray1[i] <<" "<<dArray2[i]<<" "<<dArray3[i]<<" "<<dArray4[i]<<endl;
             if (!(dArray1[i] == dArray2[i]) &&
                 (dArray1[i] == dArray3[i]) &&
                 (dArray1[i] == dArray4[i])) {

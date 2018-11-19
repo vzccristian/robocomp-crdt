@@ -33,7 +33,7 @@
 #include <stdlib.h>
 
 #define MAX_JOBS 4
-#define DEBUGGER 1
+#define DEBUGGER 0
 
 class SpecificWorker : public GenericWorker
 {
