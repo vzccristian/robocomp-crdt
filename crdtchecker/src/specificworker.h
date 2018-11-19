@@ -43,7 +43,7 @@ public:
 	~SpecificWorker();
 	bool setParams(RoboCompCommonBehavior::ParameterList params);
 
-	void checkData(const Delta &d);
+	void check();
 	void finish(const string &name);
 
 public slots:
