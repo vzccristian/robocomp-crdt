@@ -40,6 +40,13 @@ bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params) {
     return true;
 }
 
+void SpecificWorker::initialize(int period)
+{
+    std::cout << "Initialize worker" << std::endl;
+    this->Period = period;
+    timer.start(Period);
+}
+
 void SpecificWorker::check() {
 
     std::vector<DS> dArray1, dArray2, dArray3, dArray4;

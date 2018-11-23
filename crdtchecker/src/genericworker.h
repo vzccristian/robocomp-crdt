@@ -20,7 +20,6 @@
 #define GENERICWORKER_H
 
 #include "config.h"
-#include <QtGui>
 #include <stdint.h>
 #include <qlog/qlog.h>
 
@@ -32,11 +31,10 @@
 #define CHECK_PERIOD 5000
 #define BASIC_PERIOD 100
 
-typedef map <string,::IceProxy::Ice::Object*> MapPrx;
-
 using namespace std;
-
 using namespace RoboCompDSRD4;
+
+typedef map <string,::IceProxy::Ice::Object*> MapPrx;
 
 
 
@@ -71,6 +69,7 @@ private:
 
 public slots:
 	virtual void compute() = 0;
+	virtual void initialize(int period) = 0;
 signals:
 	void kill();
 };

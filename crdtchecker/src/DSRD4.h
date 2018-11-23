@@ -658,27 +658,25 @@ struct NeighborsAttribs
 {
     ::std::string uid;
     ::RoboCompDSRD4::Attribs neighbors_attribs;
-    bool operator==(const NeighborsAttribs& rhs_) const
-    {
-        if(this == &rhs_)
-        {
+
+    bool operator==(const NeighborsAttribs &rhs_) const {
+        if (this == &rhs_) {
             return true;
         }
-        if(uid != rhs_.uid)
-        {
+        if (uid != rhs_.uid) {
             return false;
         }
-        if(neighbors_attribs.size() != rhs_.neighbors_attribs.size())
-        {
+        if (neighbors_attribs.size() != rhs_.neighbors_attribs.size()) {
             return false;
         }
-        for (int i = 0;i < ((int) neighbors_attribs.size()); ++i) {
-            if (neighbors_attribs[i] != rhs_.neighbors_attribs[i]){}
+        for (int i = 0; i < ((int) neighbors_attribs.size()); ++i) {
+            if (neighbors_attribs[i] != rhs_.neighbors_attribs[i]) {}
             return false;
         }
         return true;
     }
-    friend std::ostream &operator<<( std::ostream &output, const NeighborsAttribs& na) {
+
+    friend std::ostream &operator<<(std::ostream &output, const NeighborsAttribs &na) {
         output << na.uid;
         return output;
     };
@@ -736,7 +734,7 @@ struct RoboCompValue
     {
         return !operator<(rhs_);
     }
-    friend std::ostream &operator<<( std::ostream &output, const RoboCompValue& rv) {
+    friend std::ostream &operator<<(std::ostream &output, const RoboCompValue &rv) {
         output << rv.value;
         return output;
     };
@@ -818,9 +816,9 @@ struct CRDTData
     {
         return !operator<(rhs_);
     }
-    friend std::ostream &operator<<( std::ostream &output, const CRDTData& crdtdata) {
-         output <<" UID:"<<crdtdata.uid<<" CC:"<<crdtdata.cc<<" DC:"<<crdtdata.dc;
-//        output <<" UID:"<<crdtdata.uid;
+    friend std::ostream &operator<<(std::ostream &output, const CRDTData &crdtdata) {
+        output <<" UID:"<<crdtdata.uid<<" CC:"<<crdtdata.cc<<" DC:"<<crdtdata.dc;
+//            output << " UID:" << crdtdata.uid;
         return output;
     };
 };
@@ -834,15 +832,17 @@ struct DS
     bool operator==(const DS &ds) const {
         return (ds.id == id && ds.rcvalue == rcvalue && ds.neighbors == neighbors && ds.crdt_data == crdt_data);
     };
+
     bool operator>(const DS &ds) const {
         return ds.crdt_data.uid < crdt_data.uid;
     }
+
     bool operator<(const DS &ds) const {
         return ds.crdt_data.uid > crdt_data.uid;
     };
 
-    friend std::ostream &operator<<( std::ostream &output, const DS& ds) {
-        output <<"[Owner:"<<ds.id<<", "<<ds.rcvalue <<", "<<ds.crdt_data<<"]";
+    friend std::ostream &operator<<(std::ostream &output, const DS &ds) {
+        output << "[Owner:" << ds.id << ", " << ds.rcvalue << ", " << ds.crdt_data << "]";
         return output;
     };
 };

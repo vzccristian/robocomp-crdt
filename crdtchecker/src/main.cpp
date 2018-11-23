@@ -150,12 +150,12 @@ int ::crdtchecker::run(int argc, char* argv[])
 	}
 	catch(const Ice::Exception& ex)
 	{
-		cout << "[" << PROGRAM_NAME << "]: Exception: " << ex;
+		cout << "[" << PROGRAM_NAME << "]: Exception creating proxy DSRD4send1: " << ex;
 		return EXIT_FAILURE;
 	}
 	rInfo("DSRD4sendProxy1 initialized Ok!");
-	mprx["DSRD4sendProxy1"] = (::IceProxy::Ice::Object*)(&dsrd4send1_proxy);//Remote server proxy creation example
 
+	mprx["DSRD4sendProxy1"] = (::IceProxy::Ice::Object*)(&dsrd4send1_proxy);//Remote server proxy creation example
 
 	try
 	{
@@ -167,12 +167,12 @@ int ::crdtchecker::run(int argc, char* argv[])
 	}
 	catch(const Ice::Exception& ex)
 	{
-		cout << "[" << PROGRAM_NAME << "]: Exception: " << ex;
+		cout << "[" << PROGRAM_NAME << "]: Exception creating proxy DSRD4send2: " << ex;
 		return EXIT_FAILURE;
 	}
 	rInfo("DSRD4sendProxy2 initialized Ok!");
-	mprx["DSRD4sendProxy2"] = (::IceProxy::Ice::Object*)(&dsrd4send2_proxy);//Remote server proxy creation example
 
+	mprx["DSRD4sendProxy2"] = (::IceProxy::Ice::Object*)(&dsrd4send2_proxy);//Remote server proxy creation example
 
 	try
 	{
@@ -184,12 +184,12 @@ int ::crdtchecker::run(int argc, char* argv[])
 	}
 	catch(const Ice::Exception& ex)
 	{
-		cout << "[" << PROGRAM_NAME << "]: Exception: " << ex;
+		cout << "[" << PROGRAM_NAME << "]: Exception creating proxy DSRD4send3: " << ex;
 		return EXIT_FAILURE;
 	}
 	rInfo("DSRD4sendProxy3 initialized Ok!");
-	mprx["DSRD4sendProxy3"] = (::IceProxy::Ice::Object*)(&dsrd4send3_proxy);//Remote server proxy creation example
 
+	mprx["DSRD4sendProxy3"] = (::IceProxy::Ice::Object*)(&dsrd4send3_proxy);//Remote server proxy creation example
 
 	try
 	{
@@ -201,13 +201,12 @@ int ::crdtchecker::run(int argc, char* argv[])
 	}
 	catch(const Ice::Exception& ex)
 	{
-		cout << "[" << PROGRAM_NAME << "]: Exception: " << ex;
+		cout << "[" << PROGRAM_NAME << "]: Exception creating proxy DSRD4send4: " << ex;
 		return EXIT_FAILURE;
 	}
 	rInfo("DSRD4sendProxy4 initialized Ok!");
+
 	mprx["DSRD4sendProxy4"] = (::IceProxy::Ice::Object*)(&dsrd4send4_proxy);//Remote server proxy creation example
-
-
 
 	SpecificWorker *worker = new SpecificWorker(mprx);
 	//Monitor thread
@@ -226,31 +225,43 @@ int ::crdtchecker::run(int argc, char* argv[])
 
 	try
 	{
-		// Server adapter creation and publication
-		if (not GenericMonitor::configGetString(communicator(), prefix, "CommonBehavior.Endpoints", tmp, ""))
-		{
-			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy CommonBehavior\n";
+		try {
+			// Server adapter creation and publication
+			if (not GenericMonitor::configGetString(communicator(), prefix, "CommonBehavior.Endpoints", tmp, "")) {
+				cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy CommonBehavior\n";
+			}
+			Ice::ObjectAdapterPtr adapterCommonBehavior = communicator()->createObjectAdapterWithEndpoints("commonbehavior", tmp);
+			CommonBehaviorI *commonbehaviorI = new CommonBehaviorI(monitor);
+			adapterCommonBehavior->add(commonbehaviorI, Ice::stringToIdentity("commonbehavior"));
+			adapterCommonBehavior->activate();
 		}
-		Ice::ObjectAdapterPtr adapterCommonBehavior = communicator()->createObjectAdapterWithEndpoints("commonbehavior", tmp);
-		CommonBehaviorI *commonbehaviorI = new CommonBehaviorI(monitor );
-		adapterCommonBehavior->add(commonbehaviorI, communicator()->stringToIdentity("commonbehavior"));
-		adapterCommonBehavior->activate();
-
-
-
-
-		// Server adapter creation and publication
-		if (not GenericMonitor::configGetString(communicator(), prefix, "DSRD4recv.Endpoints", tmp, ""))
+		catch(const Ice::Exception& ex)
 		{
-			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy DSRD4recv";
+			status = EXIT_FAILURE;
+
+			cout << "[" << PROGRAM_NAME << "]: Exception raised while creating CommonBehavior adapter: " << endl;
+			cout << ex;
+
 		}
-		Ice::ObjectAdapterPtr adapterDSRD4recv = communicator()->createObjectAdapterWithEndpoints("DSRD4recv", tmp);
-		DSRD4recvI *dsrd4recv = new DSRD4recvI(worker);
-		adapterDSRD4recv->add(dsrd4recv, communicator()->stringToIdentity("dsrd4recv"));
-		adapterDSRD4recv->activate();
-		cout << "[" << PROGRAM_NAME << "]: DSRD4recv adapter created in port " << tmp << endl;
 
 
+
+		try
+		{
+			// Server adapter creation and publication
+			if (not GenericMonitor::configGetString(communicator(), prefix, "DSRD4recv.Endpoints", tmp, ""))
+			{
+				cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy DSRD4recv";
+			}
+			Ice::ObjectAdapterPtr adapterDSRD4recv = communicator()->createObjectAdapterWithEndpoints("DSRD4recv", tmp);
+			DSRD4recvI *dsrd4recv = new DSRD4recvI(worker);
+			adapterDSRD4recv->add(dsrd4recv, Ice::stringToIdentity("dsrd4recv"));
+			adapterDSRD4recv->activate();
+			cout << "[" << PROGRAM_NAME << "]: DSRD4recv adapter created in port " << tmp << endl;
+			}
+			catch (const IceStorm::TopicExists&){
+				cout << "[" << PROGRAM_NAME << "]: ERROR creating or activating adapter for DSRD4recv\n";
+			}
 
 
 
@@ -259,10 +270,10 @@ int ::crdtchecker::run(int argc, char* argv[])
 
 		// User defined QtGui elements ( main window, dialogs, etc )
 
-#ifdef USE_QTGUI
-		//ignoreInterrupt(); // Uncomment if you want the component to ignore console SIGINT signal (ctrl+c).
-		a.setQuitOnLastWindowClosed( true );
-#endif
+		#ifdef USE_QTGUI
+			//ignoreInterrupt(); // Uncomment if you want the component to ignore console SIGINT signal (ctrl+c).
+			a.setQuitOnLastWindowClosed( true );
+		#endif
 		// Run QT Application Event Loop
 		a.exec();
 
@@ -276,12 +287,16 @@ int ::crdtchecker::run(int argc, char* argv[])
 		cout << "[" << PROGRAM_NAME << "]: Exception raised on main thread: " << endl;
 		cout << ex;
 
-#ifdef USE_QTGUI
+	}
+	#ifdef USE_QTGUI
 		a.quit();
-#endif
-		monitor->exit(0);
-}
+	#endif
 
+	status = EXIT_SUCCESS;
+	monitor->terminate();
+	monitor->wait();
+	delete worker;
+	delete monitor;
 	return status;
 }
 

@@ -48,6 +48,7 @@ public:
 
 public slots:
 	void compute();
+    void initialize(int period);
 
 private:
 	InnerModel *innerModel;
