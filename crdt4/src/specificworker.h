@@ -34,17 +34,15 @@
 #include <genericworker.h>
 #include <innermodel/innermodel.h>
 #include "delta-crdts.cc"
-#include <ctime>
-#include <vector>
-#include <string>
-#include <stdlib.h>     /* srand, rand */
-#include <time.h>       /* time */
+#include "Graph.h"
 
 // ICE includes
 #include <Ice/Ice.h>
 #include <IceStorm/IceStorm.h>
 #include <Ice/Application.h>
 #include <Ice/Communicator.h>
+
+
 
 
 class SpecificWorker : public GenericWorker
@@ -55,8 +53,6 @@ public:
 	~SpecificWorker();
 	bool setParams(RoboCompCommonBehavior::ParameterList params);
 
-    
-    void initValues();
     void newRandomValue(string uid);
     std::vector<DS> getNodesArray();
 
@@ -64,12 +60,16 @@ public:
     void getData(Delta &d, DSContext &dscontext);
 	void sendData(const Delta &d);
 	void sendPortDSRD4(const string &port);
+    void draw(const DS &ds);
 
 public slots:
 	void compute();
+    void initialize(int period);
 
 private:
 	InnerModel *innerModel;
+
+	// Data
     int i, max_nodes;
     bool synchronized;
     string endpoint, proxy, id;
@@ -77,6 +77,12 @@ private:
 	ofstream myfile;
     std::vector<string> nodes_uid;
 
+    // Graph
+	QGraphicsScene scene;
+	QGraphicsView view;
+	QGraphicsEllipseItem *node;
+	QFont font;
+	Graph graph;
 };
 
 #endif

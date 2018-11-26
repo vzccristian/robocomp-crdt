@@ -21,17 +21,26 @@
 * \brief Default constructor
 */
 GenericWorker::GenericWorker(MapPrx& mprx) :
+#ifdef USE_QTGUI
+Ui_guiDlg()
+#else
 QObject()
+#endif
+
 {
-	dsrd4sync_proxy = (*(DSRD4syncPrx*)mprx["DSRD4syncProxy"]);
 	dsrd4recv_proxy = (*(DSRD4recvPrx*)mprx["DSRD4recvProxy"]);
+	dsrd4sync_proxy = (*(DSRD4syncPrx*)mprx["DSRD4syncProxy"]);
 	dsrd4_proxy = (*(DSRD4Prx*)mprx["DSRD4Pub"]);
 
 	mutex = new QMutex(QMutex::Recursive);
 
+	#ifdef USE_QTGUI
+		setupUi(this);
+		show();
+	#endif
 	Period = BASIC_PERIOD;
 	connect(&timer, SIGNAL(timeout()), this, SLOT(compute()));
-// 	timer.start(Period);
+
 }
 
 /**

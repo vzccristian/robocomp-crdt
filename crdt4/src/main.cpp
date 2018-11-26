@@ -116,7 +116,11 @@ void ::crdt4::initialize()
 
 int ::crdt4::run(int argc, char* argv[])
 {
+#ifdef USE_QTGUI
+	QApplication a(argc, argv);  // GUI application
+#else
 	QCoreApplication a(argc, argv);  // NON-GUI application
+#endif
 
 
 	sigset_t sigs;
@@ -133,29 +137,12 @@ int ::crdt4::run(int argc, char* argv[])
 
 	int status=EXIT_SUCCESS;
 
-	DSRD4Prx dsrd4_proxy;
-	DSRD4syncPrx dsrd4sync_proxy;
 	DSRD4recvPrx dsrd4recv_proxy;
+	DSRD4syncPrx dsrd4sync_proxy;
+	DSRD4Prx dsrd4_proxy;
 
 	string proxy, tmp;
 	initialize();
-
-
-	try
-	{
-		if (not GenericMonitor::configGetString(communicator(), prefix, "DSRD4syncProxy", proxy, ""))
-		{
-			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy DSRD4syncProxy\n";
-		}
-		dsrd4sync_proxy = DSRD4syncPrx::uncheckedCast( communicator()->stringToProxy( proxy ) );
-	}
-	catch(const Ice::Exception& ex)
-	{
-		cout << "[" << PROGRAM_NAME << "]: Exception: " << ex;
-		return EXIT_FAILURE;
-	}
-	rInfo("DSRD4syncProxy initialized Ok!");
-	mprx["DSRD4syncProxy"] = (::IceProxy::Ice::Object*)(&dsrd4sync_proxy);//Remote server proxy creation example
 
 
 	try
@@ -168,12 +155,29 @@ int ::crdt4::run(int argc, char* argv[])
 	}
 	catch(const Ice::Exception& ex)
 	{
-		cout << "[" << PROGRAM_NAME << "]: Exception: " << ex;
+		cout << "[" << PROGRAM_NAME << "]: Exception creating proxy DSRD4recv: " << ex;
 		return EXIT_FAILURE;
 	}
 	rInfo("DSRD4recvProxy initialized Ok!");
+
 	mprx["DSRD4recvProxy"] = (::IceProxy::Ice::Object*)(&dsrd4recv_proxy);//Remote server proxy creation example
 
+	try
+	{
+		if (not GenericMonitor::configGetString(communicator(), prefix, "DSRD4syncProxy", proxy, ""))
+		{
+			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy DSRD4syncProxy\n";
+		}
+		dsrd4sync_proxy = DSRD4syncPrx::uncheckedCast( communicator()->stringToProxy( proxy ) );
+	}
+	catch(const Ice::Exception& ex)
+	{
+		cout << "[" << PROGRAM_NAME << "]: Exception creating proxy DSRD4sync: " << ex;
+		return EXIT_FAILURE;
+	}
+	rInfo("DSRD4syncProxy initialized Ok!");
+
+	mprx["DSRD4syncProxy"] = (::IceProxy::Ice::Object*)(&dsrd4sync_proxy);//Remote server proxy creation example
 	IceStorm::TopicManagerPrx topicManager;
 	try
 	{
@@ -191,22 +195,24 @@ int ::crdt4::run(int argc, char* argv[])
 		try
 		{
 			dsrd4_topic = topicManager->retrieve("DSRD4");
+            cout << "[" << PROGRAM_NAME << "]: topic DRSD4 created" << endl;
 		}
 		catch (const IceStorm::NoSuchTopic&)
 		{
+			cout << "[" << PROGRAM_NAME << "]: ERROR retrieving DSRD4 topic. \n";
 			try
 			{
 				dsrd4_topic = topicManager->create("DSRD4");
 			}
 			catch (const IceStorm::TopicExists&){
 				// Another client created the topic.
+				cout << "[" << PROGRAM_NAME << "]: ERROR publishing the DSRD4 topic. It's possible that other component have created\n";
 			}
 		}
 	}
 	Ice::ObjectPrx dsrd4_pub = dsrd4_topic->getPublisher()->ice_oneway();
 	DSRD4Prx dsrd4 = DSRD4Prx::uncheckedCast(dsrd4_pub);
 	mprx["DSRD4Pub"] = (::IceProxy::Ice::Object*)(&dsrd4);
-
 
 
 	SpecificWorker *worker = new SpecificWorker(mprx);
@@ -226,88 +232,126 @@ int ::crdt4::run(int argc, char* argv[])
 
 	try
 	{
-		// Server adapter creation and publication
-		if (not GenericMonitor::configGetString(communicator(), prefix, "CommonBehavior.Endpoints", tmp, ""))
-		{
-			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy CommonBehavior\n";
-		}
-		Ice::ObjectAdapterPtr adapterCommonBehavior = communicator()->createObjectAdapterWithEndpoints("commonbehavior", tmp);
-		CommonBehaviorI *commonbehaviorI = new CommonBehaviorI(monitor );
-		adapterCommonBehavior->add(commonbehaviorI, communicator()->stringToIdentity("commonbehavior"));
-		adapterCommonBehavior->activate();
-
-
-
-
-		// Server adapter creation and publication
-		if (not GenericMonitor::configGetString(communicator(), prefix, "DSRD4sync.Endpoints", tmp, ""))
-		{
-			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy DSRD4sync";
-		}
-		Ice::ObjectAdapterPtr adapterDSRD4sync = communicator()->createObjectAdapterWithEndpoints("DSRD4sync", tmp);
-		DSRD4syncI *dsrd4sync = new DSRD4syncI(worker);
-		adapterDSRD4sync->add(dsrd4sync, communicator()->stringToIdentity("dsrd4sync"));
-		adapterDSRD4sync->activate();
-		cout << "[" << PROGRAM_NAME << "]: DSRD4sync adapter created in port " << tmp << endl;
-
-
-		// Server adapter creation and publication
-		if (not GenericMonitor::configGetString(communicator(), prefix, "DSRD4send.Endpoints", tmp, ""))
-		{
-			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy DSRD4send";
-		}
-		Ice::ObjectAdapterPtr adapterDSRD4send = communicator()->createObjectAdapterWithEndpoints("DSRD4send", tmp);
-		DSRD4sendI *dsrd4send = new DSRD4sendI(worker);
-		adapterDSRD4send->add(dsrd4send, communicator()->stringToIdentity("dsrd4send"));
-		adapterDSRD4send->activate();
-		cout << "[" << PROGRAM_NAME << "]: DSRD4send adapter created in port " << tmp << endl;
-
-
-
-
-
-		// Server adapter creation and publication
-		if (not GenericMonitor::configGetString(communicator(), prefix, "DSRD4Topic.Endpoints", tmp, ""))
-		{
-			cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy DSRD4Proxy";
-		}
-		Ice::ObjectAdapterPtr DSRD4_adapter = communicator()->createObjectAdapterWithEndpoints("dsrd4", tmp);
-		DSRD4Ptr dsrd4I_ = new DSRD4I(worker);
-		Ice::ObjectPrx dsrd4 = DSRD4_adapter->addWithUUID(dsrd4I_)->ice_oneway();
-		IceStorm::TopicPrx dsrd4_topic;
-		if(!dsrd4_topic){
 		try {
-			dsrd4_topic = topicManager->create("DSRD4");
+			// Server adapter creation and publication
+			if (not GenericMonitor::configGetString(communicator(), prefix, "CommonBehavior.Endpoints", tmp, "")) {
+				cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy CommonBehavior\n";
+			}
+			Ice::ObjectAdapterPtr adapterCommonBehavior = communicator()->createObjectAdapterWithEndpoints("commonbehavior", tmp);
+			CommonBehaviorI *commonbehaviorI = new CommonBehaviorI(monitor);
+			adapterCommonBehavior->add(commonbehaviorI, Ice::stringToIdentity("commonbehavior"));
+			adapterCommonBehavior->activate();
 		}
-		catch (const IceStorm::TopicExists&) {
-		//Another client created the topic
-		try{
-			dsrd4_topic = topicManager->retrieve("DSRD4");
+		catch(const Ice::Exception& ex)
+		{
+			status = EXIT_FAILURE;
+
+			cout << "[" << PROGRAM_NAME << "]: Exception raised while creating CommonBehavior adapter: " << endl;
+			cout << ex;
+
+		}
+
+
+
+		try
+		{
+			// Server adapter creation and publication
+			if (not GenericMonitor::configGetString(communicator(), prefix, "DSRD4sync.Endpoints", tmp, ""))
+			{
+				cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy DSRD4sync";
+			}
+			Ice::ObjectAdapterPtr adapterDSRD4sync = communicator()->createObjectAdapterWithEndpoints("DSRD4sync", tmp);
+			DSRD4syncI *dsrd4sync = new DSRD4syncI(worker);
+			adapterDSRD4sync->add(dsrd4sync, Ice::stringToIdentity("dsrd4sync"));
+			adapterDSRD4sync->activate();
+			cout << "[" << PROGRAM_NAME << "]: DSRD4sync adapter created in port " << tmp << endl;
+			}
+			catch (const IceStorm::TopicExists&){
+				cout << "[" << PROGRAM_NAME << "]: ERROR creating or activating adapter for DSRD4sync\n";
+			}
+
+
+		try
+		{
+			// Server adapter creation and publication
+			if (not GenericMonitor::configGetString(communicator(), prefix, "DSRD4send.Endpoints", tmp, ""))
+			{
+				cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy DSRD4send";
+			}
+			Ice::ObjectAdapterPtr adapterDSRD4send = communicator()->createObjectAdapterWithEndpoints("DSRD4send", tmp);
+			DSRD4sendI *dsrd4send = new DSRD4sendI(worker);
+			adapterDSRD4send->add(dsrd4send, Ice::stringToIdentity("dsrd4send"));
+			adapterDSRD4send->activate();
+			cout << "[" << PROGRAM_NAME << "]: DSRD4send adapter created in port " << tmp << endl;
+			}
+			catch (const IceStorm::TopicExists&){
+				cout << "[" << PROGRAM_NAME << "]: ERROR creating or activating adapter for DSRD4send\n";
+			}
+
+
+
+		// Server adapter creation and publication
+		IceStorm::TopicPrx dsrd4_topic;
+		Ice::ObjectPrx dsrd4;
+		try
+		{
+			if (not GenericMonitor::configGetString(communicator(), prefix, "DSRD4Topic.Endpoints", tmp, ""))
+			{
+				cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy DSRD4Proxy";
+			}
+			Ice::ObjectAdapterPtr DSRD4_adapter = communicator()->createObjectAdapterWithEndpoints("dsrd4", tmp);
+			DSRD4Ptr dsrd4I_ = new DSRD4I(worker);
+			Ice::ObjectPrx dsrd4 = DSRD4_adapter->addWithUUID(dsrd4I_)->ice_oneway();
+			if(!dsrd4_topic)
+			{
+				try {
+					dsrd4_topic = topicManager->create("DSRD4");
+                    cout << "[" << PROGRAM_NAME << "]: topic DRSD4 created" << endl;
+				}
+				catch (const IceStorm::TopicExists&) {
+					//Another client created the topic
+					try{
+						cout << "[" << PROGRAM_NAME << "]: Probably other client already opened the topic. Trying to connect.\n";
+						dsrd4_topic = topicManager->retrieve("DSRD4");
+					}
+					catch(const IceStorm::NoSuchTopic&)
+					{
+						cout << "[" << PROGRAM_NAME << "]: Topic doesn't exists and couldn't be created.\n";
+						//Error. Topic does not exist
+					}
+				}
+				IceStorm::QoS qos;
+				dsrd4_topic->subscribeAndGetPublisher(qos, dsrd4);
+			}
+			DSRD4_adapter->activate();
 		}
 		catch(const IceStorm::NoSuchTopic&)
 		{
+			cout << "[" << PROGRAM_NAME << "]: Error creating DSRD4 topic.\n";
 			//Error. Topic does not exist
-			}
 		}
-		IceStorm::QoS qos;
-		dsrd4_topic->subscribeAndGetPublisher(qos, dsrd4);
-		}
-		DSRD4_adapter->activate();
 
 		// Server adapter creation and publication
 		cout << SERVER_FULL_NAME " started" << endl;
 
 		// User defined QtGui elements ( main window, dialogs, etc )
 
-#ifdef USE_QTGUI
-		//ignoreInterrupt(); // Uncomment if you want the component to ignore console SIGINT signal (ctrl+c).
-		a.setQuitOnLastWindowClosed( true );
-#endif
+		#ifdef USE_QTGUI
+			//ignoreInterrupt(); // Uncomment if you want the component to ignore console SIGINT signal (ctrl+c).
+			a.setQuitOnLastWindowClosed( true );
+		#endif
 		// Run QT Application Event Loop
 		a.exec();
 
-		std::cout << "Unsubscribing topic: dsrd4 " <<std::endl;
-		dsrd4_topic->unsubscribe( dsrd4 );
+		try
+		{
+			std::cout << "Unsubscribing topic: dsrd4 " <<std::endl;
+			dsrd4_topic->unsubscribe( dsrd4 );
+		}
+		catch(const Ice::Exception& ex)
+		{
+			std::cout << "ERROR Unsubscribing topic: dsrd4 " <<std::endl;
+		}
 
 		status = EXIT_SUCCESS;
 	}
@@ -318,12 +362,16 @@ int ::crdt4::run(int argc, char* argv[])
 		cout << "[" << PROGRAM_NAME << "]: Exception raised on main thread: " << endl;
 		cout << ex;
 
-#ifdef USE_QTGUI
+	}
+	#ifdef USE_QTGUI
 		a.quit();
-#endif
-		monitor->exit(0);
-}
+	#endif
 
+	status = EXIT_SUCCESS;
+	monitor->terminate();
+	monitor->wait();
+	delete worker;
+	delete monitor;
 	return status;
 }
 

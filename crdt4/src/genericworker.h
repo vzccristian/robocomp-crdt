@@ -20,10 +20,15 @@
 #define GENERICWORKER_H
 
 #include "config.h"
-#include <QtGui>
 #include <stdint.h>
 #include <qlog/qlog.h>
 
+#if Qt5_FOUND
+	#include <QtWidgets>
+#else
+	#include <QtGui>
+#endif
+#include <ui_mainUI.h>
 
 #include <CommonBehavior.h>
 
@@ -32,17 +37,20 @@
 #define CHECK_PERIOD 5000
 #define BASIC_PERIOD 100
 
-typedef map <string,::IceProxy::Ice::Object*> MapPrx;
-
 using namespace std;
-
 using namespace RoboCompDSRD4;
+
+typedef map <string,::IceProxy::Ice::Object*> MapPrx;
 
 
 
 
 class GenericWorker :
+#ifdef USE_QTGUI
+public QWidget, public Ui_guiDlg
+#else
 public QObject
+#endif
 {
 Q_OBJECT
 public:
@@ -55,8 +63,8 @@ public:
 	QMutex *mutex;
 
 
-	DSRD4syncPrx dsrd4sync_proxy;
 	DSRD4Prx dsrd4_proxy;
+	DSRD4syncPrx dsrd4sync_proxy;
 	DSRD4recvPrx dsrd4recv_proxy;
 
 	virtual bool sendSync(const string &name, const Delta &d) = 0;
@@ -73,6 +81,7 @@ private:
 
 public slots:
 	virtual void compute() = 0;
+	virtual void initialize(int period) = 0;
 signals:
 	void kill();
 };

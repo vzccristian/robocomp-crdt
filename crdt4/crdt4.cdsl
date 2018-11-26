@@ -9,4 +9,5 @@ Component crdt4
 		implements DSRD4sync, DSRD4send;
 	};
 	language Cpp;
+	gui Qt(QWidget);
 };
