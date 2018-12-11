@@ -27,15 +27,16 @@
 #ifndef SPECIFICWORKER_H
 #define SPECIFICWORKER_H
 
-#define MAX_RANDOM 50
-#define MIN_RANDOM 0
+#define MAX_NODES 100
+#define MAX_REPS 100
+#include <unistd.h>
 
 
 #include <genericworker.h>
 #include <innermodel/innermodel.h>
 #include "delta-crdts.cc"
 #include "Graph.h"
-
+#include <unistd.h>
 // ICE includes
 #include <Ice/Ice.h>
 #include <IceStorm/IceStorm.h>
@@ -60,20 +61,26 @@ public:
     void getData(Delta &d, DSContext &dscontext);
 	void sendData(const Delta &d);
 	void sendPortDSRD4(const string &port);
-    void draw(const DS &ds);
+//    void draw(const DS &ds);
+
 
 public slots:
 	void compute();
     void initialize(int period);
+    void draw(const DS &ds);
+
+signals:
+    void valueChanged(const DS &ds);
 
 private:
 	InnerModel *innerModel;
 
+
 	// Data
-    int i, max_nodes;
-    bool synchronized;
+    int i, reps;
+    bool synchronized, start;
     string endpoint, proxy, id;
-    aworset<DS> nodes;
+    ormap<string,aworset<DS>> nodes;
 	ofstream myfile;
     std::vector<string> nodes_uid;
 

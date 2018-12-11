@@ -43,16 +43,16 @@ bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params) {
     endpoint = params["DSRD4sync.Endpoints"].value.substr(params["DSRD4sync.Endpoints"].value.size() - 5);
     proxy = params["DSRD4syncProxy"].value;
     id = params["id"].value;
-    synchronized = false;
+    synchronized = start = false;
 
     srand(time(NULL));
 
-    i = 0;
-    max_nodes = rand() % MAX_RANDOM + MIN_RANDOM;
+    i = reps = 0;
 
-    nodes = aworset<DS>("nodes");
-    nodes_uid.resize(max_nodes);
-    cout << "[ID:" << id << "]-> inicio:" << i << " maximo: " << max_nodes << endl;
+    nodes = ormap<string, aworset<DS>>("node");
+
+    nodes_uid.resize(MAX_NODES); // Simulation
+    cout << "[ID:" << id << "]-> inicio:" << i << " maximo: " << MAX_NODES << endl;
 
 
     return true;
@@ -61,18 +61,18 @@ bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params) {
 /*
  * Init for QT5
  */
-void SpecificWorker::initialize(int period)
-{
+void SpecificWorker::initialize(int period) {
     std::cout << "---> Initialize worker" << std::endl;
+//    connect(&timer, SIGNAL(valueChanged()), this, SLOT(draw()));
+//    connect(this,SIGNAL(valueChanged(DS)), this,SLOT(draw(DS)));
     this->Period = period;
     timer.start(Period);
 
     scene.setSceneRect(0, 0, 5200, 5200);
     view.setScene(&scene);
-    //view.scale(1, -1);
     view.setParent(scrollArea);
     view.setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
-    view.fitInView(scene.sceneRect(), Qt::KeepAspectRatio );
+    view.fitInView(scene.sceneRect(), Qt::KeepAspectRatio);
     font.setPixelSize(200);
     font.setBold(false);
     font.setFamily("Calibri");
@@ -80,8 +80,7 @@ void SpecificWorker::initialize(int period)
     qDebug() << __FILE__ << __FUNCTION__ << __cplusplus;
 
     QTime time = QTime::currentTime();
-    qsrand((uint)time.msec());
-
+    qsrand((uint) time.msec());
 }
 
 /*
@@ -90,36 +89,53 @@ void SpecificWorker::initialize(int period)
  */
 void SpecificWorker::compute() {
     QMutexLocker locker(mutex);
-    // Sync inicial
+
+    // Sync inicial.
     if (!synchronized) {
-        dsrd4_proxy->sendPortDSRD4(endpoint); // Publish my port for a sync
-        while (!synchronized and i < 3) {
+        dsrd4_proxy->sendPortDSRD4(endpoint); // Publicar puerto para hacer sync. (Callback)
+        while (!start and i < 5) {
             cout << "." << endl;
             i++;
-            if (!synchronized)
-                sleep(1);
+            if (!start) sleep(1);
         }
-        synchronized = true;
+        if (!start) cout << "I'm first." << endl;
+        i = 0;
+        synchronized = start = true;
     }
 
-    // Simulation
-    if (i < MAX_RANDOM) {
-        newRandomValue("uid-" + to_string(i * stoi(id)));
-        i++;
-    } else if (i == MAX_RANDOM) {
-        cout << "END->NODES: \n" << nodes << endl;
-        try {
-            dsrd4recv_proxy->finish(id);
+    // Simulacion.
+    if (start) {
+        if (i < MAX_NODES) {
+            newRandomValue("uid-" + to_string(i)); // Modificaciones sobre el conjunto de datos.
             i++;
-        } catch (const std::exception& ex){
-            cout << ".."<<endl;
-            sleep(3);
-        }
-        cout << "END " << i << " " << endl;
-    } else {
-        myfile.open("nodes-" + id + ".txt", std::ofstream::out | std::ofstream::trunc);
-        myfile << nodes;
-        myfile.close();
+        } else if (i == MAX_NODES) {
+            cout << "\nEnd lap: \n";
+            i++;
+            cout << "-----------> Nodos [i]:" << i << ". Vueltas [reps]:" << reps << endl;
+        } else {
+            if (reps < MAX_REPS) { // Nueva vuelta.
+                reps++;
+                i = 0;
+            } else { // Componente ha finalizado.
+                cout << "\n\n\n\nFile[" << id << "]... " << endl;
+                cout << nodes << endl;
+
+                // Checker
+                try {
+                    dsrd4recv_proxy->finish(id);
+                } catch (const std::exception &ex) {
+                    cout << "." << endl;
+                }
+
+                // Enviar a archivo.
+
+//              myfile.open("nodes-" + id + ".txt", std::ofstream::out | std::ofstream::trunc);
+//              myfile << nodes  << endl;
+//              myfile.close();
+
+                sleep(5);
+            }
+        };
     }
 }
 
@@ -127,9 +143,8 @@ void SpecificWorker::compute() {
  * Inserción de datos
  */
 void SpecificWorker::newRandomValue(string uid) {
-    aworset<DS> aux0(uid); // Creacion de aux
     std::vector<DS> dArray; // Array para enviar deltas
-    aworset<DS> delta;
+
     RoboCompDSRD4::DS ds;
     ds.neighbors = vector<RoboCompDSRD4::NeighborsAttribs>(); // Para nodos vecinos
     NeighborsAttribs na;
@@ -145,8 +160,8 @@ void SpecificWorker::newRandomValue(string uid) {
         ds.neighbors.push_back(na); // Vecinos OK
     }
 
-    ds.rcvalue.value = rand() % 25000 + 10000;  // "Valor" real
-    ds.id = id;
+    ds.rcvalue.value = rand() % 1200 + 300;  // "Valor" real
+    ds.id = id; //Owner
 
     ds.crdt_data.uid = uid;
     ds.crdt_data.cc = 0;
@@ -159,42 +174,32 @@ void SpecificWorker::newRandomValue(string uid) {
     //         nodes.join(aux0.add(ds));
 
 
-    try {
-        delta = aux0.add(ds);
-        pair<DS, pair<int, int>> n = nodes.getNodes(uid); // For context
-        if(n.second.first>0 || n.second.second > 0)
-        {
-            aux0.context().setContext(uid, n.second.first, n.second.second);
-            delta = aux0.add(ds);
-        }
-        cout << "New value: " << aux0 << endl;
-
-        nodes.join(delta); // Insertar el dato
-    } catch (exception e) {
-        cout << "Error" << endl;
+    auto contx = nodes.context().get(uid);
+    if (!contx.empty()) {
+        ds.crdt_data.cc = contx.back().first;
+        ds.crdt_data.dc = contx.back().second;
     }
 
-    draw(ds);
-    // Preparar para enviar
-    list<pair<int, int>> indContext = nodes.context().get(uid);
-    ds.crdt_data.cc = indContext.back().first; // Asignacion de concepto antes de enviar
-    ds.crdt_data.dc = indContext.back().second;
+//    cout << ", Estoy creando " << ds << " con cc: " << contx.back().first;
+
+    // No inserto de forma local. Solo modifico a través del topic de publicación.
     dArray.push_back(ds);
     dsrd4_proxy->sendData(dArray); // Publicacion de datos
-
+    usleep(std::stoi(id) * 20); // Latencia en función del ID.
 }
 
 
+// TODO: Draw data.
 void SpecificWorker::draw(const DS &ds) {
     // Atributos
     string uid = ds.crdt_data.uid;
-    uid = uid.erase(0,4);
+    uid = uid.erase(0, 4);
     Graph::Attribs atts;
-    int posx = (std::stoi(uid)*700 % 4000) + 100;
-    int posy = (std::stoi(uid)*700 / 4000) * 400 + 100;
-    atts.insert(std::pair("posx",(double) posx));
-    atts.insert(std::pair("posy",(double) posy));
-    cout <<graph.size()<<" x->" <<posx<<" y->" <<posy<< endl;
+    int posx = (std::stoi(uid) * 700 % 4000) + 100;
+    int posy = (std::stoi(uid) * 700 / 4000) * 400 + 100;
+    atts.insert(std::pair("posx", (double) posx));
+    atts.insert(std::pair("posy", (double) posy));
+    cout << graph.size() << " x->" << posx << " y->" << posy << endl;
 
     // Insertar
     atts.insert(std::pair("color", "red"));
@@ -202,8 +207,8 @@ void SpecificWorker::draw(const DS &ds) {
 
     // Pintar
     QPainterPath path;
-    path.addText(posx+100, posy+300, font,  QString::fromStdString( ds.crdt_data.uid));
-    scene.addEllipse(posx,posy, 700, 400, QPen(Qt::magenta), QBrush(Qt::magenta));
+    path.addText(posx + 100, posy + 300, font, QString::fromStdString(ds.crdt_data.uid));
+    scene.addEllipse(posx, posy, 650, 400, QPen(Qt::magenta), QBrush(Qt::magenta));
     scene.addPath(path, QPen(QBrush(Qt::black), 1), QBrush(Qt::black));
     view.show();
 }
@@ -214,40 +219,45 @@ void SpecificWorker::draw(const DS &ds) {
  */
 std::vector<DS> SpecificWorker::getNodesArray() {
     std::vector<DS> aux;
-    list<pair<int, int>> indContext;
-    for (auto x : nodes.readAsList()) {
-        indContext = nodes.context().get(x.second.crdt_data.uid);
-        x.second.crdt_data.cc = x.first;
-        x.second.crdt_data.dc = indContext.back().second; //TODO. Check
-        aux.push_back(x.second);
+    auto map = nodes.getFullOrMap();
+    auto context = map.second.second;
+    for (auto x : map.second.first) {
+        for (auto y : x.second.readAsList()) {
+            auto listContext = context.get();
+            y.second.crdt_data.cc = listContext.first.front().second;
+            y.second.crdt_data.dc = listContext.second.front().second;
+            y.second.crdt_data.dc = 0;
+            aux.push_back(y.second);
+        }
     }
     return aux;
 }
+
 
 /*
  * Callback para sincronización inicial
  */
 bool SpecificWorker::sendSync(const string &name, const Delta &d) {
+    cout << "<-- sendSync (trying sync)" << name << endl;
     if (!synchronized) {
+        synchronized = true;
         cout << "<-------------- Somebody is writting initial sync... (" << name << ")" << endl;
         aworset<DS> delta;
         for (auto const &x : d) {
-            if (x.id != id) { // Omito mis propios datos
-                aworset<DS> aworsetAux(x.crdt_data.uid); //Create node
-                RoboCompDSRD4::DS aux = (RoboCompDSRD4::DS) x; //Delta to RoboCompDSRD3
-                delta = aworsetAux.add(aux);
-                if (x.crdt_data.cc-1 > 0)
-                {
-                    aworsetAux.context().setContext(x.crdt_data.uid, x.crdt_data.cc-1, x.crdt_data.dc-1);
-                    delta = aworsetAux.add(aux);
-                }
-//                cout <<" --> Anado a aworset:"<< aworsetAux << endl;
-                nodes.join(delta);
-            }
+            auto contx = nodes.context().get(x.crdt_data.uid);
+            if (!contx.empty()) {
+                if (contx.back().first <= x.crdt_data.cc) {
+                    nodes[x.crdt_data.uid].add(x, x.crdt_data.uid);
+//                cout << "---------------------> LLEGA BIEN. [CC:"<<x.crdt_data.cc<<"]. CC_actual: "<<contx.back().first<<" valido. "<< x << endl;
+                } else
+                    cout << "---------------------> LLEGA TARDE. [CC:" << x.crdt_data.cc << "]. CC_actual: "
+                         << contx.back().first << ". " << x << endl;
+            } else
+                nodes[x.crdt_data.uid].add(x, x.crdt_data.uid);
         }
-//        cout << nodes << endl;
+        cout << nodes << endl;
         cout << "<-------------- Sync nodes completed " << endl;
-        synchronized = true;
+        start = true; // Ahora puede empezar.
     }
     return synchronized;
 }
@@ -257,20 +267,31 @@ bool SpecificWorker::sendSync(const string &name, const Delta &d) {
  * Topic para deltas
  */
 void SpecificWorker::sendData(const Delta &d) {
-    for (auto &x : d) {
-        if (x.id != id) {
-            aworset<DS> aworsetAux(x.crdt_data.uid); //Create node
-            aworset<DS> delta;
-            RoboCompDSRD4::DS aux = (RoboCompDSRD4::DS) x; //Delta to RoboCompDSRD3
 
-            delta = aworsetAux.add(aux);
-            if (aux.crdt_data.cc-1 > 0)
-            {
-                aworsetAux.context().setContext(x.crdt_data.uid, x.crdt_data.cc-1, x.crdt_data.dc-1);
-                delta = aworsetAux.add(aux);
-            }
-//            cout <<" --> Anado a aworset:"<< aworsetAux << endl;
-            nodes.join(delta);
+
+    //TODO: Mejorar.
+
+    if (!start) { // Si me publican antes de comenzar, debo de esperar por la sync.
+        usleep(500);
+        cout << "sendData esperando..." << endl;
+    } else {
+        for (auto &x : d) {
+            auto contx = nodes.context().get(x.crdt_data.uid);
+            cout << "Recv: " << x << endl;
+            if (!contx.empty()) {
+                if (contx.back().first <= x.crdt_data.cc) {
+                    nodes[x.crdt_data.uid].add(x, x.crdt_data.uid);
+//                cout << "---------------------> LLEGA BIEN. [CC:"<<x.crdt_data.cc<<"]. CC_actual: "<<contx.back().first<<" valido. "<< x << endl;
+                } else
+                    cout << "---------------------> LLEGA TARDE. [CC:" << x.crdt_data.cc << "]. CC_actual: "
+                         << contx.back().first << ". " << x << endl;
+            } else
+                nodes[x.crdt_data.uid].add(x, x.crdt_data.uid);
+
+// TODO:
+////            emit draw(aux);
+
+
         }
     }
 }
@@ -280,34 +301,29 @@ void SpecificWorker::sendData(const Delta &d) {
  */
 void SpecificWorker::sendPortDSRD4(const string &port) {
     if (endpoint != port) {
-        cout << "--------------> Somebody (" << port << ") needs initial sync.(" << proxy << ")" << endl;
+        start = false;
+        cout << "--------------> Somebody (" << port << ") needs initial sync." << endl;
         string aux = proxy.replace(proxy.end() - 5, proxy.end(), port);
-        cout << aux << endl;
         DSRD4syncPrx p = DSRD4syncPrx::uncheckedCast(Ice::Application::communicator()->stringToProxy(aux)); // Hot proxy
         cout << "-----------------> proxy created to: " << aux << endl;
-//        cout << nodes << endl;
-        std::vector<DS> array = getNodesArray();
-        p->sendSync("comp" + id + "-" + port, array);
-//        cout << "Sync sent > "<<array.size()<<"> "<<array<<endl;
+        p->sendSync("comp" + id + "-" + port, getNodesArray());
+        sleep(3);
+        start = true;
     }
 }
 
-
+//TODO:
 void SpecificWorker::getData(Delta &d, DSContext &dscontext) {
     d = getNodesArray();
     vector<RoboCompDSRD4::CRDTData> crdtData = vector<RoboCompDSRD4::CRDTData>();
-    pair<map<string,int>, set<pair<string,int>>> contexto = nodes.context().getCcDc();
-    for (const auto & cc : contexto.first)
-    {
-
+    pair<map<string, int>, set<pair<string, int>>> contexto = nodes.context().getCcDc();
+    for (const auto &cc : contexto.first) {
         RoboCompDSRD4::CRDTData auxCrdtData;
         auxCrdtData.uid = cc.first;
         auxCrdtData.cc = cc.second;
-        for (const auto & dc : contexto.second)
-            if (dc.first == cc.first)
-            {
+        for (const auto &dc : contexto.second)
+            if (dc.first == cc.first) {
                 auxCrdtData.dc = dc.second;
-                break;
             }
         crdtData.push_back(auxCrdtData);
     }

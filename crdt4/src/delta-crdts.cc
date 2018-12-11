@@ -199,14 +199,20 @@ public:
         return(pair<map<K,int>, set<pair<K,int>>>(cc,dc));
     };
 
+
     pair<list<pair<K,int>>,list<pair<K,int>>> get()
     {
         list<pair<K,int>> dataCC;
         list<pair<K,int>> dataDC;
         for (const auto & ki : cc)
             dataCC.push_back(pair<K,int> (ki.first,ki.second));
-        for (const auto & ki : dc)
+//        cout << " -- Contexto -- \n"<<endl;
+        for (const auto & ki : dc) {
+//            cout << ki.first << " "<< ki.second<<endl;
             dataDC.push_back(pair<K,int> (ki.first,ki.second));
+        }
+
+
         return  pair<list<pair<K,int>>,list<pair<K,int>>> (dataCC, dataDC);;
     }
 
@@ -223,7 +229,7 @@ public:
                         p.second = kdc.second;
                     }
                 l.push_back(p);
-             }
+            }
         }
 //         cout << "get UID:"<< uid << " "<< p.first << " "<< p.second << endl;
         return l;
@@ -275,18 +281,18 @@ public:
                     }
                     else ++sit;
                 else // there is a CC entry already
-                    if (sit->second == cc.at(sit->first) + 1) // Contiguous, can compact
-                    {
-                        cc.at(sit->first)++;
-                        dc.erase(sit++);
-                        flag=true;
-                    }
-                    else if (sit->second <= cc.at(sit->first)) // dominated, so prune
-                    {
-                        dc.erase(sit++);
-                        // no extra compaction oportunities so flag untouched
-                    }
-                    else ++sit;
+                if (sit->second == cc.at(sit->first) + 1) // Contiguous, can compact
+                {
+                    cc.at(sit->first)++;
+                    dc.erase(sit++);
+                    flag=true;
+                }
+                else if (sit->second <= cc.at(sit->first)) // dominated, so prune
+                {
+                    dc.erase(sit++);
+                    // no extra compaction oportunities so flag untouched
+                }
+                else ++sit;
             }
         }
         while(flag==true);
@@ -944,16 +950,16 @@ public:
     aworset() {} // Only for deltas and those should not be mutated
     aworset(K k) : id(k) {} // Mutable replicas need a unique id
     aworset(K k, dotcontext<K> &jointc) : id(k), dk(jointc) {}
-// 
+//
     dotcontext<K> & context()
     {
         return dk.c;
     }
-    
+
     dotkernel<E,K> & dots() {
         return dk;
     }
-    
+
     friend ostream &operator<<( ostream &output, const aworset<E,K>& o)
     {
         output << "AWORSet:" << o.dk;
@@ -1022,6 +1028,14 @@ public:
         return r;
     }
 
+    aworset<E,K> add(const E& val, const K& uid)
+    {
+        aworset<E,K> r;
+        r.dk=dk.rmv(val); // optimization that first deletes val
+        r.dk.join(dk.add(uid,val));
+        return r;
+    }
+
     aworset<E,K> rmv (const E& val)
     {
         aworset<E,K> r;
@@ -1037,7 +1051,7 @@ public:
     }
 
     void join (aworset<E,K> o)
-    {   
+    {
         dk.join(o.dk);
         // Further optimization can be done by keeping for val x and id A
         // only the highest dot from A supporting x.
@@ -1188,7 +1202,7 @@ public:
         for (const auto & dsa : dk.ds) // Naif quadratic comparison
             for (const auto & dsb : dk.ds)
                 if ( dsa.second != dsb.second &&
-                        ::join(dsa.second,dsb.second) == dsb.second ) // < based on join
+                     ::join(dsa.second,dsb.second) == dsb.second ) // < based on join
                     // if (dsa.second < dsb.second) // values must implement operator<
                     s.insert(dsa.second);
         // remove all non maximals and register deltas for those removals
@@ -1494,11 +1508,25 @@ public:
         return c;
     }
 
+    pair<K,pair<map<N,V>,dotcontext<K>>> getFullOrMap() {
+        return pair<K,pair<map<N,V>,dotcontext<K>>>(id,getOrMap());
+    }
+
+    pair<map<N,V>,dotcontext<K>> getOrMap() {
+        return pair<map<N,V>,dotcontext<K>>(m,c);
+    }
+
+    bool in(const N& n) {
+        return(m.find(n) != m.end());
+    }
+
+
     friend ostream &operator<<( ostream &output, const ormap<N,V,K>& o)
     {
-        output << "Map:" << o.c << endl;
+        output << "Map:" << o.c <<"\n";
         for (const auto & kv : o.m)
-            cout << kv.first << "->" << kv.second << endl;
+            cout << kv.first << "->" << kv.second << "\n";
+
         return output;
     }
 
@@ -2170,4 +2198,3 @@ public:
     }
 
 };
-

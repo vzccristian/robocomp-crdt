@@ -195,7 +195,6 @@ int ::crdt4::run(int argc, char* argv[])
 		try
 		{
 			dsrd4_topic = topicManager->retrieve("DSRD4");
-            cout << "[" << PROGRAM_NAME << "]: topic DRSD4 created" << endl;
 		}
 		catch (const IceStorm::NoSuchTopic&)
 		{
@@ -301,12 +300,11 @@ int ::crdt4::run(int argc, char* argv[])
 			}
 			Ice::ObjectAdapterPtr DSRD4_adapter = communicator()->createObjectAdapterWithEndpoints("dsrd4", tmp);
 			DSRD4Ptr dsrd4I_ = new DSRD4I(worker);
-			Ice::ObjectPrx dsrd4 = DSRD4_adapter->addWithUUID(dsrd4I_)->ice_oneway();
+			Ice::ObjectPrx dsrd4 = DSRD4_adapter->addWithUUID(dsrd4I_)->ice_twoway();
 			if(!dsrd4_topic)
 			{
 				try {
 					dsrd4_topic = topicManager->create("DSRD4");
-                    cout << "[" << PROGRAM_NAME << "]: topic DRSD4 created" << endl;
 				}
 				catch (const IceStorm::TopicExists&) {
 					//Another client created the topic
@@ -321,6 +319,7 @@ int ::crdt4::run(int argc, char* argv[])
 					}
 				}
 				IceStorm::QoS qos;
+                qos["reliability"] = "ordered";
 				dsrd4_topic->subscribeAndGetPublisher(qos, dsrd4);
 			}
 			DSRD4_adapter->activate();

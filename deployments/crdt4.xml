@@ -15,8 +15,8 @@
  <node alias="crdt1" endpoint="commonbehavior:tcp -p 12101">
   <dependence alias="storm" /> 
   <dependence alias="crdtchecker" />
-  <workingDir path="/home/robocomp" />
-  <upCommand command="rcremote localhost crdt1 /home/robocomp/robocomp/components/robocomp-crdt/crdt4  bin/crdt4 etc/config" />
+  <workingDir path="/home/crivac/robocomp" />
+  <upCommand command="rcremote localhost crdt1 /home/robocomp/robocomp/components/robocomp-crdt/crdt4  clear; printf '\e[3J'; bin/crdt4 etc/config" />
   <downCommand command="killall -9 crdt4" />
   <configFile path="/home/robocomp/robocomp/components/robocomp-crdt/crdt4/etc/config" />
   <xpos value="70" />
@@ -29,7 +29,7 @@
   <dependence alias="storm" />
   <dependence alias="crdtchecker" />
   <workingDir path="/home/crivac/robocomp" />
-  <upCommand command="rcremote localhost crdt2 /home/robocomp/robocomp/components/robocomp-crdt/crdt4  bin/crdt4 etc/config2" />
+  <upCommand command="rcremote localhost crdt2 /home/robocomp/robocomp/components/robocomp-crdt/crdt4  clear; printf '\e[3J'; bin/crdt4 etc/config2" />
   <downCommand command="killall -9 crdt4" />
   <configFile path="/home/robocomp/robocomp/components/robocomp-crdt/crdt4/etc/config2" />
   <xpos value="70" />
@@ -42,7 +42,7 @@
   <dependence alias="storm" />
   <dependence alias="crdtchecker" />
   <workingDir path="/home/crivac/robocomp" />
-  <upCommand command="rcremote localhost crdt3 /home/robocomp/robocomp/components/robocomp-crdt/crdt4  bin/crdt4 etc/config3" />
+  <upCommand command="rcremote localhost crdt3 /home/robocomp/robocomp/components/robocomp-crdt/crdt4  clear; printf '\e[3J'; bin/crdt4 etc/config3" />
   <downCommand command="killall -9 crdt4" />
   <configFile path="/home/robocomp/robocomp/components/robocomp-crdt/crdt4/etc/config2" />
   <xpos value="70" />
@@ -55,7 +55,7 @@
   <dependence alias="storm" />
   <dependence alias="crdtchecker" />
   <workingDir path="/home/crivac/robocomp" />
-  <upCommand command="rcremote localhost crdt4 /home/robocomp/robocomp/components/robocomp-crdt/crdt4  bin/crdt4 etc/config4" />
+  <upCommand command="rcremote localhost crdt4 /home/robocomp/robocomp/components/robocomp-crdt/crdt4  clear; printf '\e[3J'; bin/crdt4 etc/config4" />
   <downCommand command="killall -9 crdt4" />
   <configFile path="/home/robocomp/robocomp/components/robocomp-crdt/crdt4/etc/config2" />
   <xpos value="70" />

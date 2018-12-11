@@ -792,8 +792,8 @@ namespace RoboCompDSRD4 {
         }
 
         friend std::ostream &operator<<(std::ostream &output, const CRDTData &crdtdata) {
-         output <<" UID:"<<crdtdata.uid<<" CC:"<<crdtdata.cc<<" DC:"<<crdtdata.dc;
-//            output << " UID:" << crdtdata.uid;
+//         output <<" UID:"<<crdtdata.uid<<" CC:"<<crdtdata.cc<<" DC:"<<crdtdata.dc;
+            output << " UID:" << crdtdata.uid;
             return output;
         };
     };
