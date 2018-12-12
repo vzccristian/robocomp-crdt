@@ -27,8 +27,8 @@
 #ifndef SPECIFICWORKER_H
 #define SPECIFICWORKER_H
 
-#define MAX_NODES 100
-#define MAX_REPS 100
+#define MAX_NODES 50
+#define MAX_REPS 50
 #include <unistd.h>
 
 

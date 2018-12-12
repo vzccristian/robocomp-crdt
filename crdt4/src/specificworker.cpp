@@ -119,14 +119,6 @@ void SpecificWorker::compute() {
             } else { // Componente ha finalizado.
                 cout << "\n\n\n\nFile[" << id << "]... " << endl;
                 cout << nodes << endl;
-
-                // Checker
-                try {
-                    dsrd4recv_proxy->finish(id);
-                } catch (const std::exception &ex) {
-                    cout << "." << endl;
-                }
-
                 // Enviar a archivo.
 
 //              myfile.open("nodes-" + id + ".txt", std::ofstream::out | std::ofstream::trunc);
@@ -312,7 +304,7 @@ void SpecificWorker::sendPortDSRD4(const string &port) {
     }
 }
 
-//TODO:
+
 void SpecificWorker::getData(Delta &d, DSContext &dscontext) {
     d = getNodesArray();
     vector<RoboCompDSRD4::CRDTData> crdtData = vector<RoboCompDSRD4::CRDTData>();

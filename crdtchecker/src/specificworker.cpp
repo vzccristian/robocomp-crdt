@@ -48,15 +48,18 @@ void SpecificWorker::initialize(int period)
 }
 
 void SpecificWorker::check() {
-
+    cout << "Getting data" <<endl;
     std::vector<DS> dArray1, dArray2, dArray3, dArray4;
     std::vector<CRDTData> context1, context2, context3, context4;
     try {
-
         dsrd4send1_proxy->getData(dArray1, context1);
+        cout << "Componente 1"<<endl;
         dsrd4send2_proxy->getData(dArray2, context2);
+        cout << "Componente 2"<<endl;
         dsrd4send3_proxy->getData(dArray3, context3);
+        cout << "Componente 3"<<endl;
         dsrd4send4_proxy->getData(dArray4, context4);
+        cout << "Componente 4"<<endl;
 
         cout << "\nChecking data..." << dArray1.size() << " " << dArray2.size() << " " << dArray3.size() << " "
              << dArray4.size() << " items." << endl;
@@ -82,32 +85,30 @@ void SpecificWorker::check() {
                 exit(1);
             }
         }
-
         cout << "All right.\n" << endl;
         sleep(1);
         exit(0);
 
     }
     catch (const std::exception &ex) {
-        cout << ".." << endl;
+        cout << ".."<<ex.what() << endl;
         sleep(3);
     }
 }
 
 void SpecificWorker::compute() {
     QMutexLocker locker(mutex);
-
-    if (DEBUGGER)  //DEBUGGER MODE
+    if (DEBUGGER)
         check();
-    else {
-        if (actualJobs == MAX_JOBS)  // Time to check
-            check();
-        else
-            sleep(3);
+    else
+    {
+        if (actualJobs == MAX_JOBS) check();
+        else sleep(3);
     }
+
 }
 
-
+//Borrar
 void SpecificWorker::finish(const string &name) {
     cout << name << " finished. " << endl;
     jobs[actualJobs] = name;

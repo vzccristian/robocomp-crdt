@@ -13,7 +13,7 @@ DSRD4send4Proxy = dsrd4send:tcp -h localhost -p 13204
 
 
 InnerModelPath = innermodel.xml
-
+Ice.MessageSizeMax=2000480
 Ice.Warn.Connections=0
 Ice.Trace.Network=0
 Ice.Trace.Protocol=0
