@@ -33,7 +33,6 @@
 #include <stdlib.h>
 
 #define MAX_JOBS 4
-#define DEBUGGER 1
 
 class SpecificWorker : public GenericWorker
 {
@@ -54,9 +53,6 @@ private:
 	InnerModel *innerModel;
 	std::string jobs[MAX_JOBS];
     aworset<DS> nodes[MAX_JOBS];
-	int actualJobs;
-	bool same;
-
 };
 
 #endif

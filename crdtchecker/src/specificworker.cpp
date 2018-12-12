@@ -33,10 +33,7 @@ SpecificWorker::~SpecificWorker() {
 }
 
 bool SpecificWorker::setParams(RoboCompCommonBehavior::ParameterList params) {
-    actualJobs = 0;
     timer.start(Period);
-    if (DEBUGGER)
-        cout << "Debugger mode." <<endl;
     return true;
 }
 
@@ -98,21 +95,5 @@ void SpecificWorker::check() {
 
 void SpecificWorker::compute() {
     QMutexLocker locker(mutex);
-    if (DEBUGGER)
-        check();
-    else
-    {
-        if (actualJobs == MAX_JOBS) check();
-        else sleep(3);
-    }
-
+    check();
 }
-
-//Borrar
-void SpecificWorker::finish(const string &name) {
-    cout << name << " finished. " << endl;
-    jobs[actualJobs] = name;
-    actualJobs++;
-}
-
-

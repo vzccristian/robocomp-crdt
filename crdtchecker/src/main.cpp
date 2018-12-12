@@ -81,7 +81,6 @@
 #include "specificmonitor.h"
 #include "commonbehaviorI.h"
 
-#include <dsrd4recvI.h>
 
 #include <DSRD4.h>
 
@@ -244,24 +243,6 @@ int ::crdtchecker::run(int argc, char* argv[])
 
 		}
 
-
-
-		try
-		{
-			// Server adapter creation and publication
-			if (not GenericMonitor::configGetString(communicator(), prefix, "DSRD4recv.Endpoints", tmp, ""))
-			{
-				cout << "[" << PROGRAM_NAME << "]: Can't read configuration for proxy DSRD4recv";
-			}
-			Ice::ObjectAdapterPtr adapterDSRD4recv = communicator()->createObjectAdapterWithEndpoints("DSRD4recv", tmp);
-			DSRD4recvI *dsrd4recv = new DSRD4recvI(worker);
-			adapterDSRD4recv->add(dsrd4recv, Ice::stringToIdentity("dsrd4recv"));
-			adapterDSRD4recv->activate();
-			cout << "[" << PROGRAM_NAME << "]: DSRD4recv adapter created in port " << tmp << endl;
-			}
-			catch (const IceStorm::TopicExists&){
-				cout << "[" << PROGRAM_NAME << "]: ERROR creating or activating adapter for DSRD4recv\n";
-			}
 
 
 

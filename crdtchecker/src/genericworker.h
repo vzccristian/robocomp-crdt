@@ -58,7 +58,6 @@ public:
 	DSRD4sendPrx dsrd4send3_proxy;
 	DSRD4sendPrx dsrd4send4_proxy;
 
-	virtual void finish(const string &name) = 0;
 
 protected:
 	QTimer timer;
